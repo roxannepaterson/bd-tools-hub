@@ -132,15 +132,23 @@
   .hr{ display:flex; flex-direction:column; gap:24px; min-width:0; } .hl{ min-width:0; }
   .tools{ display:grid; grid-template-columns:1fr; gap:20px; margin-top:6px; }
   .tools .tlink{ padding:14px 16px; } .tools .tname{ font-size:19px; } .tools .tdesc{ font-size:15px; } .tools .ttag{ margin-top:7px; }
-  .fadd > div:first-child{ grid-column:span 2; }
+  .fadd > div:first-child, .fadd > div:nth-child(2){ grid-column:span 2; }
+  .acts{ margin:8px 0 2px; } .act{ display:flex; gap:12px; align-items:center; padding:6px 0; } .act input[type=checkbox]{ width:22px; height:22px; accent-color:var(--accent); flex:none; }
+  .atext{ flex:1; font-size:17px; min-width:0; } .aown{ font-size:14.5px; font-weight:600; color:var(--soft); background:var(--grey); padding:2px 11px; border-radius:11px; white-space:nowrap; }
+  .act.done .atext{ text-decoration:line-through; color:var(--soft); } .hsl{ font-size:15px; font-weight:600; margin-left:4px; } .fchk{ padding-top:2px; }
   .tools .tsec{ margin:0; } .tools .tgrid{ grid-template-columns:1fr; gap:10px; margin-top:8px; }
   .dashbtns{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:12px 0 4px; }
   a.btn{ text-decoration:none; display:inline-block; } a.btn.primary{ color:#fff; }
-  .dashframe{ width:100%; height:min(820px, 80vh); border:1px solid var(--line); border-radius:12px; margin-top:12px; background:#fff; }
   .pcols{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.6fr); gap:24px; align-items:start; }
   .pcols .card{ margin:0 0 24px; }
   .rec-act{ display:flex; gap:10px; align-items:center; white-space:nowrap; }
   .tlinkbtn{ margin-top:10px; display:inline-block; }
+  .snap{ display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:14px; margin:14px 0 6px; }
+  .tile{ border:1px solid var(--line); border-radius:12px; padding:16px 18px; background:#fff; }
+  .tile .tl{ font-size:16px; font-weight:600; } .tile .tv{ font-size:38px; font-weight:700; margin:4px 0 8px; letter-spacing:-.01em; }
+  .tile .bar{ height:9px; background:var(--grey); border-radius:6px; overflow:hidden; } .tile .bar i{ display:block; height:100%; background:var(--accent); border-radius:6px; }
+  .tile .tm{ font-size:15px; color:var(--soft); margin-top:7px; } .neg{ color:var(--danger); font-weight:600; } .pos{ color:var(--ok); font-weight:600; }
+  .asof{ font-size:16px; color:var(--soft); margin:6px 0 0; } .asof.old{ color:#b4501c; font-weight:600; }
   @media (max-width:1100px){ .home, .pcols{ grid-template-columns:minmax(0,1fr); } }
   .pcols > div{ min-width:0; } .panel h4{ flex-wrap:wrap; } .panel{ min-width:0; }
   @media (max-width:900px){ .fadd{ grid-template-columns:1fr 1fr; } .fadd .wide{ grid-column:1 / -1; } .addlink{ grid-template-columns:1fr; } }
@@ -194,7 +202,7 @@
   const DEFAULT_OWNERS = ["Roxanne", "Alison", "Lyndon", "Michael"];
 
   /* ---------- what the hub starts with (written to the database once, then it is yours to edit) ---------- */
-  const SEED_VERSION = 3;
+  const SEED_VERSION = 5;
   const SEED_SECTIONS = [["maps","Win maps and account maps",0],["targeting","Targeting and leads",1]];
   const SEED_TOOLS = [
     ["winmap","maps","Win Map","Strategy On A Page for a live deal.",SITE+"win-map/win-map.html",""],
@@ -204,7 +212,12 @@
     ["lead","targeting","Lead Assessment","Score a lead: pursue, nurture or leave.",SITE+"lead-verifier/lead-assessment.html",""],
     ["lease","targeting","Lease Event Countdown","Time to lease break for a prospect.",SITE+"lease-timeline/index.html",""]
   ];
-  const SEED_DASHBOARD = { title:"Anchorpoint BD Dashboard", desc:"Live from HubSpot, month by month.", url:"https://claude.ai/artifact/UKmL7KVLBp15dV9Gwbmetz" };
+  const HS_DASH = "https://app.hubspot.com/reports-dashboard/5227851";
+  const SEED_DASHBOARD = { title:"Anchorpoint BD Dashboard", desc:"", url:"https://claude.ai/artifact/UKmL7KVLBp15dV9Gwbmetz", hsUrl:HS_DASH };
+  // a snapshot of the headline numbers, worked out the same way as the Anchorpoint BD Dashboard (Monthly). Not live: it is updated by pasting in new numbers.
+  const SEED_SNAPSHOT = { asOf:"2026-11-17", month:"November 2026",
+    mql:{ value:1100000, target:10000000, deals:2, prev:2000000 }, sql:{ value:0, target:3000000, deals:0, prev:660000 },
+    client:{ value:10, prev:21 }, broker:{ value:4, prev:9 } };
   // links taken off the hub for now (first version of the hub had them); removed once from anyone who already has the first version
   const RETIRED_TOOLS = ["competitor","leeds","timeline","meetinghub","bdmeeting","mplan","mideas","hsleads","hsdeals","hscompanies","hscontacts","hsdash"];
   const V2_TEXT = {
@@ -216,6 +229,7 @@
     lease:["Time to lease break or expiry for a prospect, personalised per account.","Per-prospect link"]
   };
   const V2_DASH = "Live from HubSpot: MQL and SQL value against target, and team meetings, month by month.";
+  const V3_DASH = "Live from HubSpot, month by month.";
   const RETIRED_SECTIONS = ["pipeline","accounts","meetings","marketing","hubspot"];
   const SEED_COMPANIES = {
     "dla-piper": { name:"DLA Piper", domain:"dlapiper.com", locations:{
@@ -270,18 +284,18 @@
   function loadLocal(){ let d = {}; try { d = JSON.parse(localStorage.getItem(LS_KEY) || "{}") || {}; } catch(e){} onData(d); }
   function onData(raw){
     raw = raw || {};
-    data = { sections: raw.sections || {}, tools: raw.tools || {}, companies: raw.companies || {}, focus: raw.focus || {}, seeded: !!raw.seeded, seedVersion: raw.seedVersion || (raw.seeded ? 1 : 0), dashboard: raw.dashboard || null };
+    data = { sections: raw.sections || {}, tools: raw.tools || {}, companies: raw.companies || {}, focus: raw.focus || {}, seeded: !!raw.seeded, seedVersion: raw.seedVersion || (raw.seeded ? 1 : 0), dashboard: raw.dashboard || null, snapshot: raw.snapshot || null };
     if (!data.seeded) seed(); else if (data.seedVersion < SEED_VERSION) migrate();
     render(); checkLive();
   }
   function seed(){
-    const up = { seeded: true, seedVersion: SEED_VERSION, dashboard: SEED_DASHBOARD };
+    const up = { seeded: true, seedVersion: SEED_VERSION, dashboard: SEED_DASHBOARD, snapshot: SEED_SNAPSHOT };
     SEED_SECTIONS.forEach(([id, name, order]) => { up["sections/" + id] = { name, order }; });
     SEED_TOOLS.forEach(([id, section, title, desc, url, tag], i) => { up["tools/" + id] = { section, title, desc, url, tag, order: i }; });
     Object.keys(SEED_COMPANIES).forEach(id => { up["companies/" + id] = Object.assign({ createdAt: Date.now() }, SEED_COMPANIES[id]); });
     patchMany(up);
   }
-  // first version of the hub -> this one: take the retired links off, regroup the rest, add the dashboard. Anything you added yourself is kept.
+  // earlier versions of the hub -> this one. Retired links go, wording is shortened only where nobody changed it, and anything you added is kept.
   function migrate(){
     const up = { seedVersion: SEED_VERSION };
     if (data.seedVersion < 2){
@@ -291,14 +305,27 @@
       Object.keys(to).forEach(id => { if (data.tools[id]) up["tools/" + id + "/section"] = to[id]; });
       RETIRED_SECTIONS.forEach(id => { if (data.sections[id]) up["sections/" + id] = null; });
     }
-    // shorter wording: only where nobody has changed it
-    SEED_TOOLS.forEach(([id, , , desc]) => {
-      const cur = data.tools[id], old = V2_TEXT[id]; if (!cur || !old) return;
-      if (cur.desc === old[0]) up["tools/" + id + "/desc"] = desc;
-      if (cur.tag === old[1]) up["tools/" + id + "/tag"] = "";
-    });
+    if (data.seedVersion < 3){
+      SEED_TOOLS.forEach(([id, , , desc]) => {
+        const cur = data.tools[id], old = V2_TEXT[id]; if (!cur || !old) return;
+        if (cur.desc === old[0]) up["tools/" + id + "/desc"] = desc;
+        if (cur.tag === old[1]) up["tools/" + id + "/tag"] = "";
+      });
+    }
     if (!data.dashboard) up.dashboard = SEED_DASHBOARD;
-    else if (data.dashboard.desc === V2_DASH) up["dashboard/desc"] = SEED_DASHBOARD.desc;
+    else {
+      if (data.dashboard.desc === V2_DASH || data.dashboard.desc === V3_DASH) up["dashboard/desc"] = "";
+      if (!data.dashboard.hsUrl) up["dashboard/hsUrl"] = HS_DASH;
+    }
+    if (!data.snapshot) up.snapshot = SEED_SNAPSHOT;
+    if (data.seedVersion < 5){
+      // a focus used to carry one "next action" and one owner: it becomes a focus with that as its first action
+      Object.keys(data.focus).forEach(wk => Object.keys(data.focus[wk] || {}).forEach(fid => {
+        const r = data.focus[wk][fid]; if (!r || typeof r !== "object" || r.actions) return;
+        const next = String(r.next || "").trim(); if (!next) return;
+        up["focus/" + wk + "/" + fid + "/actions/" + fid + "a"] = { text: next, owner: r.owner || "", done: !!r.done, createdAt: r.createdAt || Date.now() };
+      }));
+    }
     patchMany(up);
   }
   function patchMany(up){
@@ -380,39 +407,53 @@
     companies().forEach(c => { names.push(c.name); locationsOf(c).forEach(l => names.push(l.name)); });
     $("coList").innerHTML = names.map(n => `<option value="${attr(n)}">`).join("");
     const owners = new Set(DEFAULT_OWNERS);
-    Object.values(data.focus).forEach(w => Object.values(w || {}).forEach(f => { if (f && f.owner) owners.add(f.owner); }));
+    Object.values(data.focus).forEach(w => Object.values(w || {}).forEach(f => { if (!f) return; if (f.owner) owners.add(f.owner); Object.values(f.actions || {}).forEach(a => { if (a && a.owner) owners.add(a.owner); }); }));
     $("ownList").innerHTML = Array.from(owners).sort().map(n => `<option value="${attr(n)}">`).join("");
   }
 
-  function focusRows(){ return Object.keys(data.focus[week] || {}).map(id => Object.assign({ id }, data.focus[week][id])).sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.createdAt || 0) - (b.createdAt || 0)); }
-  const FOCUS_TYPES = ["Lead", "Deal", "Account", "Campaign", "Other"];
+  const actionsOf = r => Object.keys(r.actions || {}).map(id => Object.assign({ id }, r.actions[id])).filter(a => a && typeof a === "object").sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+  const focusDone = r => { const a = actionsOf(r); return a.length ? a.every(x => x.done) : !!r.done; };
+  // no link typed? if the focus is a company on the hub, point at its HubSpot record (the exact location, or the only one)
+  function autoHs(r){
+    const co = companyFor(r.company); if (!co) return "";
+    const locs = locationsOf(co), loc = locs.find(l => startsWithName(r.company, l.name)) || (locs.length === 1 ? locs[0] : null);
+    return loc ? hsCompany(loc.id) : "";
+  }
+  function focusRows(){
+    return Object.keys(data.focus[week] || {}).map(id => Object.assign({ id }, data.focus[week][id])).filter(r => r && typeof r === "object")
+      .sort((a, b) => (focusDone(a) ? 1 : 0) - (focusDone(b) ? 1 : 0) || (a.createdAt || 0) - (b.createdAt || 0));
+  }
 
   function renderFocus(){
-    const rows = focusRows(), done = rows.filter(r => r.done).length;
-    const prevRows = Object.keys(data.focus[addDays(week, -7)] || {}).map(id => data.focus[addDays(week, -7)][id]).filter(r => r && !r.done);
+    const rows = focusRows();
+    const allActs = rows.reduce((n, r) => n.concat(actionsOf(r)), []), doneActs = allActs.filter(a => a.done).length;
+    const prevWeek = data.focus[addDays(week, -7)] || {};
+    const prevHas = Object.keys(prevWeek).some(k => prevWeek[k] && !focusDone(prevWeek[k]));
     const thisWeek = week === mondayOf(new Date());
     const rowHtml = rows.map(r => {
-      const co = companyFor(r.company), name = r.company || "Untitled";
+      const co = companyFor(r.company), name = r.company || "Untitled", acts = actionsOf(r), done = focusDone(r);
       const nameHtml = co ? `<a class="co" href="#company/${attr(encodeURIComponent(co.id))}">${esc(name)}</a>` : `<strong>${esc(name)}</strong>`;
-      const hs = safeUrl(r.url);
-      return `<div class="frow ${r.done ? "done" : ""}" data-id="${attr(r.id)}">
-        <input type="checkbox" data-act="f-done" ${r.done ? "checked" : ""} aria-label="Done: ${attr(name)}">
-        <div><div class="ftop">${nameHtml}${r.type ? `<span class="chip ${r.type === "Lead" ? "lead" : r.type === "Deal" ? "deal" : ""}">${esc(r.type)}</span>` : ""}${r.owner ? `<span class="own">${esc(r.owner)}</span>` : ""}</div>
-          ${r.why ? `<div class="fwhy">${esc(r.why)}</div>` : ""}${r.next ? `<div class="fnext"><b>Next:</b> ${esc(r.next)}</div>` : ""}</div>
-        <div class="fctl">${hs ? `<a href="${attr(hs)}" target="_blank" rel="noopener">HubSpot ↗</a>` : ""}<button class="btn small" data-act="f-edit">Edit</button><button class="btn small danger" data-act="f-del" aria-label="Remove ${attr(name)}">Remove</button></div>
+      const hs = safeUrl(r.url) || autoHs(r);
+      const actHtml = acts.map(a => `<div class="act ${a.done ? "done" : ""}" data-aid="${attr(a.id)}">
+          <input type="checkbox" data-act="a-done" ${a.done ? "checked" : ""} aria-label="Done: ${attr(a.text || "")}">
+          <span class="atext">${esc(a.text || "")}</span>${a.owner ? `<span class="aown">${esc(a.owner)}</span>` : ""}
+          <button class="link-btn" data-act="a-edit">Edit</button></div>`).join("");
+      return `<div class="frow ${done ? "done" : ""}" data-id="${attr(r.id)}">
+        <div class="fchk">${acts.length ? "" : `<input type="checkbox" data-act="f-done" ${r.done ? "checked" : ""} aria-label="Done: ${attr(name)}">`}</div>
+        <div><div class="ftop">${nameHtml}${hs ? `<a class="hsl" href="${attr(hs)}" target="_blank" rel="noopener">HubSpot ↗</a>` : ""}</div>
+          ${actHtml ? `<div class="acts">${actHtml}</div>` : ""}<button class="link-btn" data-act="a-add">+ Add action</button></div>
+        <div class="fctl"><button class="btn small" data-act="f-edit">Edit</button><button class="btn small danger" data-act="f-del" aria-label="Remove ${attr(name)}">Remove</button></div>
       </div>`;
     }).join("");
     return `<section class="card" id="focus">
       <div class="sec-head"><h2>This week’s focus</h2><span class="grow"></span>
         <div class="wk"><button data-act="wk-prev" aria-label="Previous week">◀</button><span>Week of ${esc(fmtDate(week))}</span><button data-act="wk-next" aria-label="Next week">▶</button>${thisWeek ? "" : `<button data-act="wk-now">This week</button>`}</div></div>
-      ${rows.length ? `<p class="muted">${done} of ${rows.length} done</p>` : ""}
+      ${allActs.length ? `<p class="muted">${doneActs} of ${allActs.length} actions done</p>` : ""}
       <div class="frows">${rowHtml || `<div class="empty">Nothing picked yet.</div>`}</div>
-      ${prevRows.length ? `<p><button class="link-btn" data-act="f-copy">Copy last week’s unfinished</button></p>` : ""}
+      ${prevHas ? `<p><button class="link-btn" data-act="f-copy">Copy last week’s unfinished</button></p>` : ""}
       <form class="fadd" data-act="f-add" autocomplete="off">
         <div><label for="fa_co">Focus</label><input id="fa_co" name="company" list="coList" placeholder="Company, campaign or task"></div>
-        <div><label for="fa_type">Type (optional)</label><select id="fa_type" name="type"><option value=""></option>${FOCUS_TYPES.map(x => `<option>${x}</option>`).join("")}</select></div>
-        <div><label for="fa_why">Why it’s a focus</label><input id="fa_why" name="why" placeholder="e.g. lease break in 2028"></div>
-        <div><label for="fa_next">Next action</label><input id="fa_next" name="next" placeholder="e.g. book discovery meeting"></div>
+        <div><label for="fa_act">First action</label><input id="fa_act" name="action" placeholder="What needs doing"></div>
         <div><label for="fa_own">Owner</label><input id="fa_own" name="owner" list="ownList" placeholder="Who"></div>
         <div><label for="fa_url">HubSpot link</label><input id="fa_url" name="url" placeholder="Optional"></div>
         <div style="align-self:end"><button class="btn primary" type="submit">Add</button></div>
@@ -455,15 +496,50 @@
     return `<section class="card"><div class="sec-head"><h2>Tools and links</h2></div><div class="tools">${out.join("")}</div>${addSec}</section>`;
   }
 
-  let showDash = false;
+  /* numbers for the dashboard card */
+  const fmtMoney = n => { n = Math.round(Number(n) || 0); if (n >= 1e6) return "£" + (n / 1e6).toFixed(2).replace(/0+$/, "").replace(/\.$/, "") + "m"; if (n >= 1e3) return "£" + Math.round(n / 1e3) + "k"; return "£" + n; };
+  const fmtAsOf = iso => { const d = new Date(iso + "T00:00:00"); return isNaN(d) ? iso : d.toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" }); };
+  const parseNum = s => { const m = String(s == null ? "" : s).replace(/[£,\s]/g, "").match(/^(-?\d+(?:\.\d+)?)([kKmM]?)$/); if (!m) return NaN; let n = parseFloat(m[1]); if (/k/i.test(m[2])) n *= 1e3; if (/m/i.test(m[2])) n *= 1e6; return n; };
+  function snapshotText(s){
+    const mon = (l, m) => l + ": " + m.value + " | deals " + (m.deals == null ? 0 : m.deals) + " | last month " + (m.prev == null ? 0 : m.prev) + " | target " + m.target;
+    const met = (l, m) => l + ": " + m.value + " | last month " + (m.prev == null ? 0 : m.prev);
+    return ["As of: " + fmtAsOf(s.asOf), "Month: " + s.month, mon("MQL value", s.mql), mon("SQL value", s.sql), met("Client engagement meetings", s.client), met("Broker networking meetings", s.broker)].join("\n");
+  }
+  function parseSnapshot(text){
+    const lines = {}; String(text || "").split("\n").forEach(l => { const k = l.indexOf(":"); if (k > 0) lines[l.slice(0, k).trim().toLowerCase()] = l.slice(k + 1).trim(); });
+    const get = (...names) => { for (const n of names) for (const k of Object.keys(lines)) if (k.startsWith(n)) return lines[k]; return null; };
+    const part = (rest, re) => { const p = String(rest).split("|").map(x => x.trim()).slice(1).find(x => re.test(x)); return p ? parseNum(p.replace(re, "")) : NaN; };
+    const d = get("as of", "date"); let asOf = null; if (d){ const dt = /^\d{4}-\d{2}-\d{2}$/.test(d) ? new Date(d + "T00:00:00") : new Date(d); if (!isNaN(dt)) asOf = iso(dt); }
+    if (!asOf) return { error: "I couldn’t read the “As of” date." };
+    const month = get("month"); if (!month) return { error: "I couldn’t find the “Month” line." };
+    const money = (name, label, tdef) => { const r = get(name); if (r == null) return { error: "I couldn’t find the “" + label + "” line." }; const v = parseNum(String(r).split("|")[0]); if (!isFinite(v)) return { error: "I couldn’t read the number on the “" + label + "” line." };
+      const tg = part(r, /^target\s*/i), pv = part(r, /^last month\s*/i), dl = part(r, /^deals?\s*/i); return { value: v, target: isFinite(tg) ? tg : tdef, prev: isFinite(pv) ? pv : null, deals: isFinite(dl) ? dl : null }; };
+    const meet = (name, label) => { const r = get(name); if (r == null) return { error: "I couldn’t find the “" + label + "” line." }; const v = parseNum(String(r).split("|")[0]); if (!isFinite(v)) return { error: "I couldn’t read the number on the “" + label + "” line." }; const pv = part(r, /^last month\s*/i); return { value: v, prev: isFinite(pv) ? pv : null }; };
+    const mql = money("mql", "MQL value", 10000000), sql = money("sql", "SQL value", 3000000), client = meet("client", "Client engagement meetings"), broker = meet("broker", "Broker networking meetings");
+    for (const x of [mql, sql, client, broker]) if (x.error) return { error: x.error };
+    return { snapshot: { asOf, month: month.trim(), mql, sql, client, broker } };
+  }
+  function renderSnapshot(){
+    const s = data.snapshot;
+    if (!s) return `<p class="none">No numbers yet.</p>`;
+    const chg = (d, money) => { if (d == null || !isFinite(d)) return ""; const a = Math.abs(d); return `<span class="${d < 0 ? "neg" : d > 0 ? "pos" : ""}">${esc((d < 0 ? "−" : d > 0 ? "+" : "") + (money ? fmtMoney(a) : a))}</span> vs last month`; };
+    const tile = (label, value, extra) => `<div class="tile"><div class="tl">${esc(label)}</div><div class="tv">${esc(value)}</div>${extra}</div>`;
+    const moneyTile = (label, m) => { const pct = m.target ? Math.round(m.value / m.target * 100) : 0;
+      return tile(label, fmtMoney(m.value), `<div class="bar"><i style="width:${Math.max(0, Math.min(100, pct))}%"></i></div><div class="tm">${pct}% of ${esc(fmtMoney(m.target))}</div><div class="tm">${chg(m.prev == null ? null : m.value - m.prev, true)}${m.deals != null ? " · " + m.deals + (m.deals === 1 ? " deal" : " deals") : ""}</div>`); };
+    const meetTile = (label, m) => tile(label, String(m.value), `<div class="tm">${chg(m.prev == null ? null : m.value - m.prev, false)}</div>`);
+    const old = (Date.now() - new Date(s.asOf + "T00:00:00").getTime()) / 86400000 > 7;
+    return `<p class="asof ${old ? "old" : ""}">${esc(s.month)} so far · as of ${esc(fmtAsOf(s.asOf))}${old ? " (out of date)" : ""}</p>
+      <div class="snap">${moneyTile("MQL value", s.mql)}${moneyTile("SQL value", s.sql)}${meetTile("Client engagement meetings", s.client)}${meetTile("Broker networking meetings", s.broker)}</div>`;
+  }
+
   function renderDashboard(){
     const d = data.dashboard;
     if (!d || !d.url) return editMode ? `<section class="card span"><div class="sec-head"><h2>BD dashboard</h2></div><p class="muted">Nothing here yet.</p><button class="btn small" data-act="dash-edit">+ Add the BD dashboard</button></section>` : "";
-    const url = safeUrl(d.url), title = d.title || "BD dashboard";
-    return `<section class="card span" id="dash"><div class="sec-head"><h2>${esc(title)}</h2><span class="grow"></span>${editMode ? `<button class="btn small" data-act="dash-edit">Edit</button>` : ""}</div>
-      ${d.desc ? `<p class="muted">${esc(d.desc)}</p>` : ""}
-      <div class="dashbtns"><a class="btn primary" href="${attr(url)}" target="_blank" rel="noopener">Open the dashboard ↗</a><button class="btn" data-act="dash-show">${showDash ? "Hide it here" : "Show it here"}</button><a href="https://app.hubspot.com/reports-dashboard/5227851" target="_blank" rel="noopener">HubSpot’s own dashboards ↗</a></div>
-      ${showDash ? `<iframe class="dashframe" src="${attr(url)}" title="${attr(title)}"></iframe><p class="muted">If it stays blank, use Open the dashboard.</p>` : `<p class="muted">Opens in Claude. Sign in with your Anchorpoint account.</p>`}
+    const url = safeUrl(d.url), title = d.title || "BD dashboard", hs = safeUrl(d.hsUrl) || HS_DASH;
+    return `<section class="card span" id="dash"><div class="sec-head"><h2>${esc(title)}</h2><span class="grow"></span><button class="link-btn" data-act="snap-edit">Update numbers</button>${editMode ? ` <button class="btn small" data-act="dash-edit">Edit links</button>` : ""}</div>
+      ${renderSnapshot()}
+      <div class="dashbtns"><a class="btn primary" href="${attr(url)}" target="_blank" rel="noopener">Open live dashboard ↗</a><a class="btn" href="${attr(hs)}" target="_blank" rel="noopener">${hs === HS_DASH ? "HubSpot dashboards" : "HubSpot BD Dashboard MTD"} ↗</a></div>
+      <p class="muted">The live dashboard opens in Claude. Sign in with your Anchorpoint account.</p>
     </section>`;
   }
 
@@ -608,11 +684,17 @@
     const f = data.focus[week][fid];
     openModal({ title:"Edit focus", fields:[
       { key:"company", label:"Focus", value:f.company, required:true, list:"coList" },
-      { key:"type", label:"Type (optional)", type:"select", value:f.type || "", options:[["",""]].concat(FOCUS_TYPES.map(x => [x, x])) },
-      { key:"why", label:"Why it’s a focus", value:f.why }, { key:"next", label:"Next action", value:f.next },
-      { key:"owner", label:"Owner", value:f.owner, list:"ownList" }, { key:"url", label:"HubSpot link (optional)", value:f.url } ],
-      onSave: v => { put("focus/" + week + "/" + fid, Object.assign({}, f, { company:v.company, type:v.type, why:v.why, next:v.next, owner:v.owner, url:v.url ? safeUrl(v.url) : "" })); },
+      { key:"url", label:"HubSpot link (optional)", value:f.url } ],
+      onSave: v => patchMany({ ["focus/" + week + "/" + fid + "/company"]: v.company, ["focus/" + week + "/" + fid + "/url"]: v.url ? safeUrl(v.url) : "" }),
       onDelete: () => put("focus/" + week + "/" + fid, null), deleteConfirm: "Remove this from this week’s focus?" });
+  }
+  function editAction(fid, aid){
+    const a = aid ? data.focus[week][fid].actions[aid] : {};
+    openModal({ title: aid ? "Edit action" : "Add an action", fields:[
+      { key:"text", label:"Action", value:a.text, required:true, placeholder:"What needs doing" },
+      { key:"owner", label:"Owner", value:a.owner, list:"ownList" } ],
+      onSave: v => { const id = aid || uid(); patchMany({ ["focus/" + week + "/" + fid + "/actions/" + id]: { text:v.text, owner:v.owner, done: aid ? !!a.done : false, createdAt: aid ? (a.createdAt || Date.now()) : Date.now() } }); render(); },
+      onDelete: aid ? () => { put("focus/" + week + "/" + fid + "/actions/" + aid, null); render(); } : null, deleteConfirm: "Remove this action?" });
   }
 
   /* ---------- events ---------- */
@@ -624,10 +706,20 @@
     else if (act === "wk-now") { week = mondayOf(new Date()); render(); }
     else if (act === "f-del") { if (confirm("Remove this from this week’s focus?")) put("focus/" + week + "/" + id, null), render(); }
     else if (act === "f-edit") editFocus(id);
+    else if (act === "a-add") editAction(id, null);
+    else if (act === "a-edit") editAction(id, b.closest(".act").dataset.aid);
+    else if (act === "a-done") { put("focus/" + week + "/" + id + "/actions/" + b.closest(".act").dataset.aid + "/done", b.checked); render(); }
     else if (act === "f-copy") {
       const prev = data.focus[addDays(week, -7)] || {}, cur = Object.values(data.focus[week] || {}), up = {}; let n = 0;
-      Object.keys(prev).forEach(k => { const r = prev[k]; if (!r || r.done) return; if (cur.some(x => x.company === r.company && (x.next || "") === (r.next || ""))) return; const nid = uid() + n; up["focus/" + week + "/" + nid] = Object.assign({}, r, { done:false, createdAt: Date.now() + n }); n++; });
-      if (n){ patchMany(up); render(); toast(n + (n === 1 ? " item" : " items") + " copied from last week"); } else toast("Nothing new to copy.");
+      Object.keys(prev).forEach(k => {
+        const r = prev[k]; if (!r || typeof r !== "object" || focusDone(r)) return;
+        if (cur.some(x => x && x.company === r.company)) return;
+        const nid = uid() + n, acts = {};
+        actionsOf(r).filter(a => !a.done).forEach((a, i) => { acts[uid() + i] = { text:a.text, owner:a.owner || "", done:false, createdAt: Date.now() + n * 100 + i }; });
+        const rec = { company:r.company, url:r.url || "", done:false, createdAt: Date.now() + n }; if (Object.keys(acts).length) rec.actions = acts;
+        up["focus/" + week + "/" + nid] = rec; n++;
+      });
+      if (n){ patchMany(up); render(); toast(n + (n === 1 ? " focus" : " focuses") + " copied from last week"); } else toast("Nothing new to copy.");
     }
     else if (act === "co-add") editCompany(null);
     else if (act === "co-edit") editCompany(currentCompanyId());
@@ -645,11 +737,15 @@
     else if (act === "s-up") { move("s", id, -1); render(); }
     else if (act === "s-down") { move("s", id, 1); render(); }
     else if (act === "s-del") { if (toolsIn(id).length) { toast("Move or remove this section’s links first."); } else if (confirm("Remove this section?")) { put("sections/" + id, null); render(); } }
-    else if (act === "dash-show") { showDash = !showDash; renderHome(); }
     else if (act === "dash-edit") {
       const d = data.dashboard || {};
-      openModal({ title:"BD dashboard", fields:[{ key:"title", label:"Name", value:d.title || "Anchorpoint BD Dashboard", required:true }, { key:"url", label:"Link", value:d.url, required:true, placeholder:"https://…" }, { key:"desc", label:"What it shows", type:"textarea", rows:3, value:d.desc }],
-        onSave: v => { const url = safeUrl(v.url); if (!url){ toast("That link doesn’t look right."); return false; } put("dashboard", { title:v.title, url, desc:v.desc }); render(); } });
+      openModal({ title:"Dashboard links", fields:[{ key:"title", label:"Name", value:d.title || "Anchorpoint BD Dashboard", required:true }, { key:"url", label:"Live dashboard link (Claude)", value:d.url, required:true, placeholder:"https://…" }, { key:"hsUrl", label:"HubSpot dashboard link (BD Dashboard MTD)", value:d.hsUrl === HS_DASH ? "" : d.hsUrl, placeholder:"Paste the address of the dashboard in HubSpot" }],
+        onSave: v => { const url = safeUrl(v.url); if (!url){ toast("That link doesn’t look right."); return false; } put("dashboard", { title:v.title, url, desc:"", hsUrl: safeUrl(v.hsUrl) || HS_DASH }); render(); } });
+    }
+    else if (act === "snap-edit") {
+      const s = data.snapshot || SEED_SNAPSHOT;
+      openModal({ title:"Update the numbers", saveLabel:"Save numbers", fields:[{ key:"text", label:"Paste the numbers here", type:"textarea", rows:7, value:snapshotText(s), required:true, hint:"Ask Claude for “the hub numbers” and paste what it gives you. Or change them by hand." }],
+        onSave: v => { const r = parseSnapshot(v.text); if (r.error){ toast(r.error); return false; } put("snapshot", r.snapshot); render(); toast("Numbers updated."); } });
     }
     else if (act === "x-link") {
       const src = SOURCES.find(s => s.key === b.dataset.src), cid = currentCompanyId();
@@ -664,8 +760,9 @@
     const fd = Object.fromEntries(new FormData(f).entries());
     if (f.dataset.act === "f-add") {
       const company = (fd.company || "").trim(); if (!company){ $("fa_co").focus(); toast("Add what the focus is first."); return; }
-      const url = (fd.url || "").trim();
-      put("focus/" + week + "/" + uid(), { company, type: fd.type || "", why: (fd.why || "").trim(), next: (fd.next || "").trim(), owner: (fd.owner || "").trim(), url: url ? safeUrl(url) : "", done:false, createdAt: Date.now() });
+      const url = (fd.url || "").trim(), action = (fd.action || "").trim(), rec = { company, url: url ? safeUrl(url) : "", done:false, createdAt: Date.now() };
+      if (action) rec.actions = { [uid()]: { text: action, owner: (fd.owner || "").trim(), done:false, createdAt: Date.now() } };
+      put("focus/" + week + "/" + uid(), rec);
       if (document.activeElement && document.activeElement.blur) document.activeElement.blur();   // pressing Enter leaves the cursor in a box, which would hold the redraw back
       render();
     } else if (f.dataset.act === "l-add") {
