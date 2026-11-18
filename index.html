@@ -164,7 +164,7 @@
   .pnotes{ width:100%; margin-top:6px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#FAFAFB; font-size:15px; resize:vertical; min-height:42px; field-sizing:content; }
   .opp{ border:1px solid var(--line); border-radius:12px; margin:10px 0 0; background:#fff; } .opp:first-of-type{ margin-top:12px; } .opp.open{ border-color:var(--accent); }
   .opp-bar{ display:flex; align-items:center; gap:12px; padding:8px 14px; } .opp-head{ flex:1; display:flex; align-items:center; gap:10px; background:none; border:0; text-align:left; cursor:pointer; padding:6px 0; font-size:18px; } .opp-head .chev{ font-size:12px; color:var(--soft); transition:transform .12s ease; } .opp.open .chev{ transform:rotate(90deg); }
-  .tabs{ display:flex; gap:6px; padding:0 14px; border-bottom:1px solid var(--line); } .tabs button{ background:none; border:0; border-bottom:3px solid transparent; padding:10px 14px; font-size:16px; font-weight:600; color:var(--soft); cursor:pointer; } .tabs button.on{ color:var(--accent); border-bottom-color:var(--accent); }
+  .tabs{ display:flex; flex-wrap:wrap; gap:2px 6px; padding:0 14px; border-bottom:1px solid var(--line); } .tabs button{ background:none; border:0; border-bottom:3px solid transparent; padding:10px 14px; font-size:16px; font-weight:600; color:var(--soft); cursor:pointer; } .tabs button.on{ color:var(--accent); border-bottom-color:var(--accent); }
   .winwrap{ padding:12px 14px 14px; } .winframe{ width:100%; height:720px; border:1px solid var(--line); border-radius:10px; background:#fff; display:block; }
   .stk{ padding:12px 14px 16px; } .tray{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:4px; } .trayl{ font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--soft); }
   .cchip{ border:1px solid var(--line); background:#fff; border-radius:18px; padding:7px 14px; font-size:15.5px; font-weight:600; cursor:grab; } .cchip small{ margin-left:7px; font-weight:400; color:var(--soft); } .cchip.sel, .pcard.sel{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); background:var(--accent-soft); }
@@ -174,6 +174,13 @@
   .pcard{ position:absolute; left:6px; right:6px; height:58px; border:1px solid var(--line); border-radius:9px; background:#fff; padding:6px 10px; cursor:grab; display:flex; flex-direction:column; justify-content:center; box-shadow:0 1px 4px rgba(16,24,32,.12); }
   .pn{ font-weight:600; font-size:15.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:44px; } .pr{ font-size:13px; color:var(--soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:44px; }
   .ps{ position:absolute; right:10px; top:6px; font-weight:700; font-size:15px; color:var(--accent); } .pe{ position:absolute; right:8px; bottom:5px; border:0; background:none; color:var(--accent); font-size:12.5px; font-weight:600; text-decoration:underline; cursor:pointer; padding:0; }
+  .gwrap{ padding:12px 14px 16px; } .gsum{ margin:0 0 12px; font-size:17px; } .gstages{ display:flex; flex-direction:column; gap:8px; }
+  .gstage{ border:1px solid var(--line); border-left:6px solid var(--line); border-radius:10px; background:#fff; padding:10px 14px 8px; }
+  .gstage.done{ border-left-color:var(--ok); background:#F4F8F4; } .gstage.current{ border-left-color:var(--accent); background:#FAF8FD; box-shadow:0 0 0 2px var(--accent-soft); }
+  .ghead{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; } .gname{ font-weight:700; font-size:18px; } .gmean{ font-size:15px; color:var(--soft); } .gcount{ font-size:14.5px; font-weight:600; color:var(--soft); }
+  .gitems{ display:flex; flex-direction:column; margin-top:4px; } .gi{ display:flex; align-items:center; gap:12px; padding:6px 0; cursor:pointer; font-size:16.5px; } .gi input{ width:22px; height:22px; accent-color:var(--accent); flex:none; } .gi.on span{ color:var(--soft); }
+  .gstage.gate{ background:var(--ink); border-color:var(--ink); border-left-color:var(--apricot); color:#fff; } .gstage.gate .gname{ letter-spacing:.06em; text-transform:uppercase; font-size:15px; } .gstage.gate .gmean, .gstage.gate .gcount, .gstage.gate .gi.on span{ color:#B8BEC4; } .gstage.gate .link-btn{ color:#E3D8F5; }
+  .gstage.gate.done{ border-left-color:var(--ok); } .gstage.gate.current{ border-left-color:var(--apricot); box-shadow:0 0 0 2px rgba(255,158,109,.45); background:var(--ink); }
   @media (max-width:1100px){ .home, .pcols{ grid-template-columns:minmax(0,1fr); } .pgrid{ grid-template-columns:minmax(0,1fr); } .board{ grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); } .axis{ display:none; } .oadd{ flex-wrap:wrap; } }
   .pcols > div{ min-width:0; } .panel h4{ flex-wrap:wrap; } .panel{ min-width:0; }
   @media (max-width:900px){ .fadd{ grid-template-columns:1fr 1fr; } .fadd .wide{ grid-column:1 / -1; } .addlink{ grid-template-columns:1fr; } }
@@ -228,7 +235,7 @@
   const DEFAULT_OWNERS = ["Roxanne", "Alison", "Lyndon", "Michael"];
 
   /* ---------- what the hub starts with (written to the database once, then it is yours to edit) ---------- */
-  const SEED_VERSION = 6;
+  const SEED_VERSION = 7;
   const SEED_SECTIONS = [["maps","Win maps and account maps",0],["targeting","Targeting and leads",1]];
   const SEED_TOOLS = [
     ["winmap","maps","Win Map","Strategy On A Page for a live deal.",SITE+"win-map/win-map.html",""],
@@ -238,6 +245,22 @@
     ["lead","targeting","Lead Assessment","Score a lead: pursue, nurture or leave.",SITE+"lead-verifier/lead-assessment.html",""],
     ["lease","targeting","Lease Event Countdown","Time to lease break for a prospect.",SITE+"lease-timeline/index.html",""]
   ];
+  // the pipeline gateway criteria, as you set them out: nine stages with three Go/No Go gates between them. Editable on the page.
+  const SEED_GATEWAY = [
+    ["nurture","stage","Nurture","Important relationship established; no live opportunity",["BD team agree to add to the Nurture list"]],
+    ["whisper","stage","Whisper","Potential project identified",["BD team agree to dig into the opportunity"]],
+    ["mql","stage","MQL","Validated opportunity",["Defined fit-out / refurbishment","Compelling event","Approximate value","Primary contact","Aligned with target profiles"]],
+    ["engaged","stage","Engaged","Meaningful dialogue underway",["Discovery call completed","Win Map in development"]],
+    ["gate1","gate","Go / No Go #1","",["Win Map presented","Anchorpoint agrees to commit to speculative design / feasibility","Stage 1 decision fee signed"]],
+    ["resource","stage","Resource Committed","Committed speculative resource (Stage 1)",["Brief development","Workshops","Indicative programme","Cost plan"]],
+    ["gate2","gate","Go / No Go #2","",["Anchorpoint agrees to develop a proposal","Stage 2 design fee signed"]],
+    ["sql","stage","SQL","Committed design resource (Stage 2)",["Developing design","Scope","Cost plan"]],
+    ["gate3","gate","Go / No Go #3","",["MD / leadership team approval to submit the proposal"]],
+    ["proposal","stage","Proposal Submitted","Proposal submitted",["Initial proposal submitted"]],
+    ["negotiation","stage","Negotiation","Strong evidence of award",["Initial approval","Anchorpoint confirmed"]],
+    ["won","stage","Won","Contract agreed and signed",["Project awarded","Signed","Stage 3/4"]]
+  ];
+  const seedGateway = () => { const g = {}; SEED_GATEWAY.forEach(([id, kind, name, meaning, items], i) => { const it = {}; items.forEach((text, j) => { it[id + "-" + j] = { text, order: j }; }); g[id] = { kind, name, meaning, order: i, items: it }; }); return g; };
   const HS_DASH = "https://app-eu1.hubspot.com/reports-dashboard/5227851";
   const HS_DASH_OLD = "https://app.hubspot.com/reports-dashboard/5227851";   // what earlier versions of the hub used
   const SEED_DASHBOARD = { title:"Anchorpoint BD Dashboard", desc:"", url:"https://claude.ai/artifact/UKmL7KVLBp15dV9Gwbmetz", hsUrl:HS_DASH };
@@ -299,7 +322,7 @@
   function onData(raw){
     raw = raw || {};
     const cidNow = currentCompanyId(), before = cidNow ? JSON.stringify(data.companies[cidNow] || null) : null;
-    data = { sections: raw.sections || {}, tools: raw.tools || {}, companies: raw.companies || {}, focus: raw.focus || {}, seeded: !!raw.seeded, seedVersion: raw.seedVersion || (raw.seeded ? 1 : 0), dashboard: raw.dashboard || null, snapshot: raw.snapshot || null };
+    data = { sections: raw.sections || {}, tools: raw.tools || {}, companies: raw.companies || {}, focus: raw.focus || {}, seeded: !!raw.seeded, seedVersion: raw.seedVersion || (raw.seeded ? 1 : 0), dashboard: raw.dashboard || null, snapshot: raw.snapshot || null, gateway: raw.gateway || null };
     if (!data.seeded) seed(); else if (data.seedVersion < SEED_VERSION) migrate();
     // someone else changing something unrelated must not reload the win map you are looking at
     const sameCompany = cidNow && JSON.stringify(data.companies[cidNow] || null) === before;
@@ -307,7 +330,7 @@
     checkLive();
   }
   function seed(){
-    const up = { seeded: true, seedVersion: SEED_VERSION, dashboard: SEED_DASHBOARD, snapshot: SEED_SNAPSHOT };
+    const up = { seeded: true, seedVersion: SEED_VERSION, dashboard: SEED_DASHBOARD, snapshot: SEED_SNAPSHOT, gateway: seedGateway() };
     SEED_SECTIONS.forEach(([id, name, order]) => { up["sections/" + id] = { name, order }; });
     SEED_TOOLS.forEach(([id, section, title, desc, url, tag], i) => { up["tools/" + id] = { section, title, desc, url, tag, order: i }; });
     Object.keys(SEED_COMPANIES).forEach(id => { up["companies/" + id] = Object.assign({ createdAt: Date.now() }, SEED_COMPANIES[id]); });
@@ -336,6 +359,7 @@
       if (!data.dashboard.hsUrl || data.dashboard.hsUrl === HS_DASH_OLD) up["dashboard/hsUrl"] = HS_DASH;
     }
     if (!data.snapshot) up.snapshot = SEED_SNAPSHOT;
+    if (!data.gateway) up.gateway = seedGateway();
     if (data.seedVersion < 5){
       // a focus used to carry one "next action" and one owner: it becomes a focus with that as its first action
       Object.keys(data.focus).forEach(wk => Object.keys(data.focus[wk] || {}).forEach(fid => {
@@ -588,12 +612,28 @@
   }
   function winMapSrc(c, o){ return SITE + "win-map/win-map.html?new=" + encodeURIComponent(o.winMapName || (c.name + " - " + o.name)); }
   function oppBody(c, o){
-    const tabs = `<div class="tabs"><button type="button" class="${oppTab === "win" ? "on" : ""}" data-act="opp-tab" data-tab="win">Win map</button><button type="button" class="${oppTab === "map" ? "on" : ""}" data-act="opp-tab" data-tab="map">Stakeholder &amp; influence map</button></div>`;
+    const tabs = `<div class="tabs"><button type="button" class="${oppTab === "win" ? "on" : ""}" data-act="opp-tab" data-tab="win">Win map</button><button type="button" class="${oppTab === "map" ? "on" : ""}" data-act="opp-tab" data-tab="map">Stakeholder &amp; influence map</button><button type="button" class="${oppTab === "gate" ? "on" : ""}" data-act="opp-tab" data-tab="gate">Pipeline gateway criteria</button></div>`;
     if (oppTab === "win"){
       const src = winMapSrc(c, o);
       return tabs + `<div class="winwrap"><iframe id="winFrame" class="winframe" src="${attr(src + "&embed=1")}" title="Win map for ${attr(o.name)}"></iframe><p class="muted"><a href="${attr(src)}" target="_blank" rel="noopener">Open the win map on its own page ↗</a></p></div>`;
     }
+    if (oppTab === "gate") return tabs + gatewayBody(o);
     return tabs + stakeBoard(c, o);
+  }
+  const gatewayStages = () => Object.keys(data.gateway || {}).map(id => Object.assign({ id }, data.gateway[id])).filter(s => s && typeof s === "object").sort((a, b) => (a.order || 0) - (b.order || 0));
+  const gateItems = s => Object.keys(s.items || {}).map(id => Object.assign({ id }, s.items[id])).filter(x => x && x.text).sort((a, b) => (a.order || 0) - (b.order || 0));
+  function gatewayBody(o){
+    const stages = gatewayStages(), ticks = o.gate || {};
+    if (!stages.length) return `<div class="gwrap"><p class="none">No criteria yet.</p></div>`;
+    const done = s => { const it = gateItems(s); return it.length > 0 && it.every(x => ticks[x.id]); };
+    const cur = stages.findIndex(s => gateItems(s).some(x => !ticks[x.id]));
+    const blocks = stages.map((s, i) => {
+      const items = gateItems(s), n = items.filter(x => ticks[x.id]).length, state = !items.length ? "todo" : done(s) ? "done" : i === cur ? "current" : "todo";
+      return `<div class="gstage ${s.kind === "gate" ? "gate" : "stage"} ${state}" data-stage="${attr(s.id)}"><div class="ghead"><span class="gname">${esc(s.name)}</span>${s.meaning ? `<span class="gmean">${esc(s.meaning)}</span>` : ""}<span class="grow"></span><span class="gcount">${n} of ${items.length}</span><button type="button" class="link-btn" data-act="g-edit">Edit</button></div>
+        <div class="gitems">${items.map(x => `<label class="gi ${ticks[x.id] ? "on" : ""}"><input type="checkbox" data-act="g-tick" data-item="${attr(x.id)}" ${ticks[x.id] ? "checked" : ""}><span>${esc(x.text)}</span></label>`).join("") || `<span class="none">No requirements.</span>`}</div></div>`;
+    }).join("");
+    const sum = cur < 0 ? `Every stage is complete.` : `Next up: <b>${esc(stages[cur].name)}</b>, ${gateItems(stages[cur]).filter(x => ticks[x.id]).length} of ${gateItems(stages[cur]).length} done.`;
+    return `<div class="gwrap"><p class="gsum">${sum}</p><div class="gstages">${blocks}</div></div>`;
   }
 
   function renderProfile(id){
@@ -721,6 +761,14 @@
       onSave: v => { patchMany({ ["companies/" + cid + "/opps/" + oid + "/name"]: v.name, ["companies/" + cid + "/opps/" + oid + "/location"]: v.loc, ["companies/" + cid + "/opps/" + oid + "/url"]: v.url ? safeUrl(v.url) : "" }); render(); },
       onDelete: () => { put("companies/" + cid + "/opps/" + oid, null); if (openOpp === oid) openOpp = null; render(); }, deleteConfirm: "Remove this opportunity and its stakeholder map? Its win map stays in the Win Map tool." });
   }
+  function editGateStage(sid){
+    const s = data.gateway[sid], items = gateItems(s);
+    openModal({ title:"Edit " + s.name, fields:[{ key:"name", label:"Name", value:s.name, required:true }, { key:"meaning", label:"What it means", value:s.meaning }, { key:"lines", label:"Requirements, one per line", type:"textarea", rows:7, value:items.map(x => x.text).join("\n") }],
+      onSave: v => {
+        const lines = v.lines.split("\n").map(x => x.trim()).filter(Boolean), byText = {}; items.forEach(x => { byText[x.text] = x.id; });
+        const next = {}; lines.forEach((text, j) => { const id = byText[text] && !next[byText[text]] ? byText[text] : sid + "-" + uid(); next[id] = { text, order: j }; });
+        patchMany({ ["gateway/" + sid + "/name"]: v.name, ["gateway/" + sid + "/meaning"]: v.meaning, ["gateway/" + sid + "/items"]: Object.keys(next).length ? next : null }); render(); } });
+  }
   function editStake(cid, oid, xid){
     const s = data.companies[cid].opps[oid].stake[xid], x = data.companies[cid].contacts[xid];
     openModal({ title: x.name + " on the map", fields:[{ key:"score", label:"How supportive (0 = detractor, 10 = promoter)", value:String(s.score) }, { key:"col", label:"Influence", type:"select", value:String(s.col), options:COLS.map((n, i) => [String(i), n]) }, { key:"notes", label:"Notes", type:"textarea", rows:3, value:s.notes }],
@@ -788,6 +836,8 @@
     else if (act === "opp-toggle") { openOpp = openOpp === id ? null : id; oppTab = "win"; selContact = null; render(); }
     else if (act === "opp-tab") { oppTab = b.dataset.tab; selContact = null; render(); }
     else if (act === "opp-edit") editOpp(currentCompanyId(), id);
+    else if (act === "g-tick") { put("companies/" + currentCompanyId() + "/opps/" + openOpp + "/gate/" + b.dataset.item, b.checked ? true : null); render(); }
+    else if (act === "g-edit") editGateStage(b.closest(".gstage").dataset.stage);
     else if (act === "st-sel") { selContact = selContact === b.dataset.contact ? null : b.dataset.contact; render(); }
     else if (act === "st-edit") { e.stopPropagation(); editStake(currentCompanyId(), openOpp, b.closest("[data-contact]").dataset.contact); }
     else if (act === "l-del") { const cid = currentCompanyId(); put("companies/" + cid + "/links/" + id, null); render(); }
