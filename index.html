@@ -151,7 +151,29 @@
   .tile .bar{ height:9px; background:var(--grey); border-radius:6px; overflow:hidden; } .tile .bar i{ display:block; height:100%; background:var(--accent); border-radius:6px; }
   .tile .tm{ font-size:15px; color:var(--soft); margin-top:7px; } .neg{ color:var(--danger); font-weight:600; } .pos{ color:var(--ok); font-weight:600; }
   .asof{ font-size:16px; color:var(--soft); margin:6px 0 0; } .asof.old{ color:#b4501c; font-weight:600; }
-  @media (max-width:1100px){ .home, .pcols{ grid-template-columns:minmax(0,1fr); } }
+  .pgrid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr) minmax(0,1.15fr); gap:24px; align-items:start; margin-bottom:24px; }
+  .pgrid .card, .pcols .card{ margin:0; } .card + .card{ margin-top:24px; } .pgrid .card + .card, .pgrid + .card{ margin-top:0; }
+  .lhead{ display:flex; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--soft); margin:6px 0 2px; }
+  .lrow{ display:flex; align-items:center; gap:12px; padding:9px 0; border-top:1px solid var(--line); } .lrow:first-of-type{ border-top:0; }
+  .lrow input[type=checkbox]{ width:22px; height:22px; accent-color:var(--accent); flex:none; } .lname{ flex:1; min-width:0; font-size:17px; font-weight:500; }
+  .ladd, .oadd{ display:flex; gap:8px; margin-top:14px; } .ladd input, .oadd input, .oadd select{ padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:#fff; min-width:0; } .ladd input, .oadd input{ flex:1; }
+  .crow{ display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-top:1px solid var(--line); cursor:grab; } .crow:first-of-type{ border-top:0; }
+  .grip{ color:var(--soft); font-size:18px; line-height:1.3; flex:none; } .cmain{ flex:1; min-width:0; } .cmain strong{ font-size:17px; } .role{ margin-left:8px; font-size:15px; color:var(--soft); } .based{ font-size:14.5px; color:var(--soft); margin-top:2px; }
+  .prow{ padding:11px 0; border-top:1px solid var(--line); } .prow:first-of-type{ border-top:0; } .phead{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; } .phead strong{ font-size:17px; }
+  .pnotes{ width:100%; margin-top:6px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#FAFAFB; font-size:15px; resize:vertical; min-height:42px; field-sizing:content; }
+  .opp{ border:1px solid var(--line); border-radius:12px; margin:10px 0 0; background:#fff; } .opp:first-of-type{ margin-top:12px; } .opp.open{ border-color:var(--accent); }
+  .opp-bar{ display:flex; align-items:center; gap:12px; padding:8px 14px; } .opp-head{ flex:1; display:flex; align-items:center; gap:10px; background:none; border:0; text-align:left; cursor:pointer; padding:6px 0; font-size:18px; } .opp-head .chev{ font-size:12px; color:var(--soft); transition:transform .12s ease; } .opp.open .chev{ transform:rotate(90deg); }
+  .tabs{ display:flex; gap:6px; padding:0 14px; border-bottom:1px solid var(--line); } .tabs button{ background:none; border:0; border-bottom:3px solid transparent; padding:10px 14px; font-size:16px; font-weight:600; color:var(--soft); cursor:pointer; } .tabs button.on{ color:var(--accent); border-bottom-color:var(--accent); }
+  .winwrap{ padding:12px 14px 14px; } .winframe{ width:100%; height:720px; border:1px solid var(--line); border-radius:10px; background:#fff; display:block; }
+  .stk{ padding:12px 14px 16px; } .tray{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:4px; } .trayl{ font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--soft); }
+  .cchip{ border:1px solid var(--line); background:#fff; border-radius:18px; padding:7px 14px; font-size:15.5px; font-weight:600; cursor:grab; } .cchip small{ margin-left:7px; font-weight:400; color:var(--soft); } .cchip.sel, .pcard.sel{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); background:var(--accent-soft); }
+  .board{ display:grid; grid-template-columns:96px repeat(3, minmax(0,1fr)); gap:10px; margin-top:8px; } .axis{ position:relative; margin-top:36px; height:440px; font-size:13px; font-weight:700; color:var(--soft); letter-spacing:.04em; text-transform:uppercase; } .axis span{ position:absolute; left:0; }
+  .lane-head{ font-size:14px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); height:30px; display:flex; align-items:center; }
+  .lane{ position:relative; border:1px solid var(--line); border-radius:10px; background:linear-gradient(to bottom, rgba(79,122,90,.14) 0 34%, rgba(0,0,0,0) 34% 66%, rgba(194,65,45,.12) 66% 100%); } .lane:hover{ border-color:var(--accent); }
+  .pcard{ position:absolute; left:6px; right:6px; height:58px; border:1px solid var(--line); border-radius:9px; background:#fff; padding:6px 10px; cursor:grab; display:flex; flex-direction:column; justify-content:center; box-shadow:0 1px 4px rgba(16,24,32,.12); }
+  .pn{ font-weight:600; font-size:15.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:44px; } .pr{ font-size:13px; color:var(--soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:44px; }
+  .ps{ position:absolute; right:10px; top:6px; font-weight:700; font-size:15px; color:var(--accent); } .pe{ position:absolute; right:8px; bottom:5px; border:0; background:none; color:var(--accent); font-size:12.5px; font-weight:600; text-decoration:underline; cursor:pointer; padding:0; }
+  @media (max-width:1100px){ .home, .pcols{ grid-template-columns:minmax(0,1fr); } .pgrid{ grid-template-columns:minmax(0,1fr); } .board{ grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); } .axis{ display:none; } .oadd{ flex-wrap:wrap; } }
   .pcols > div{ min-width:0; } .panel h4{ flex-wrap:wrap; } .panel{ min-width:0; }
   @media (max-width:900px){ .fadd{ grid-template-columns:1fr 1fr; } .fadd .wide{ grid-column:1 / -1; } .addlink{ grid-template-columns:1fr; } }
   @media (max-width:640px){ h1{ font-size:30px; } .wrap{ padding:20px 14px 70px; } .card{ padding:16px 14px; } .top{ flex-direction:column-reverse; } .brand-logo{ height:26px; } .frow{ grid-template-columns:24px minmax(0,1fr); } .fctl{ grid-column:2; justify-content:flex-start; } }
@@ -181,6 +203,7 @@
 <div id="toast" role="status" aria-live="polite"></div>
 <datalist id="coList"></datalist>
 <datalist id="ownList"></datalist>
+<datalist id="locList"></datalist>
 
 <script>
 (function(){
@@ -244,18 +267,6 @@
       "50927595621":{ name:"DLA Piper (Birmingham)", city:"Birmingham" } } }
   };
 
-  /* ---------- what the company profile looks for in the other tools (read only, matched by company name) ---------- */
-  const TIER_LABEL = { tier1:"Tier 1: Strategic", tier2:"Tier 2: Core Growth", tier3:"Tier 3: Transactional" };
-  const money = v => { const n = Number(v); if (v === "" || v == null || !isFinite(n) || n <= 0) return ""; return n >= 1e6 ? "£" + (n / 1e6).toFixed(2).replace(/0+$/, "").replace(/\.$/, "") + "M" : "£" + n.toLocaleString("en-GB"); };
-  const SOURCES = [
-    { key:"winmap", title:"Win Maps", path:"winMaps", home:SITE+"win-map/win-map.html", nameOf:r => r.name, linkOf:id => SITE+"win-map/win-map.html#"+id,
-      meta:r => [(r.facts||{}).stage, money((r.facts||{}).value)].filter(Boolean) },
-    { key:"accountmap", title:"Account Map", single:true, path:"accountMapAccounts", home:SITE+"account-map/account-map.html", nameOf:r => r.name, linkOf:id => SITE+"account-map/account-map.html?account="+encodeURIComponent(id), meta:() => [] },
-    { key:"stakeholder", title:"Stakeholder & Influence Maps", path:"projects", home:SITE+"stakeholder-matrix/stakeholder-matrix.html", nameOf:r => r.name, linkOf:() => SITE+"stakeholder-matrix/stakeholder-matrix.html", meta:() => [] },
-    { key:"lead", title:"Lead Assessments", path:"leadAssessments", home:SITE+"lead-verifier/lead-assessment.html", nameOf:r => r.name, linkOf:() => SITE+"lead-verifier/lead-assessment.html", meta:r => r.score != null ? ["Score " + r.score] : [] },
-    { key:"tiers", title:"Target Account Tier", path:"targetAccountTiers", home:SITE+"target-account-tiers/target-account-tiers.html", nameOf:r => r.name, linkOf:() => SITE+"target-account-tiers/target-account-tiers.html", meta:r => r.tier ? [TIER_LABEL[r.tier] || r.tier] : [] }
-  ];
-
   const $ = id => document.getElementById(id);
   const esc = s => { const d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; };
   const attr = s => esc(s).replace(/"/g, "&quot;");
@@ -275,7 +286,6 @@
   let db = null, mode = "local";
   let data = { sections:{}, tools:{}, companies:{}, focus:{}, seeded:false };
   let editMode = false, search = "", week = mondayOf(new Date()), pending = false;
-  let toolData = { state:"idle", sets:{}, errors:{} };
   const dead = {};   // tool id -> true when its page is not live yet
 
   function setSync(t, warn){ const s = $("sync"); s.textContent = t; s.classList.toggle("warn", !!warn); }
@@ -286,9 +296,13 @@
   function loadLocal(){ let d = {}; try { d = JSON.parse(localStorage.getItem(LS_KEY) || "{}") || {}; } catch(e){} onData(d); }
   function onData(raw){
     raw = raw || {};
+    const cidNow = currentCompanyId(), before = cidNow ? JSON.stringify(data.companies[cidNow] || null) : null;
     data = { sections: raw.sections || {}, tools: raw.tools || {}, companies: raw.companies || {}, focus: raw.focus || {}, seeded: !!raw.seeded, seedVersion: raw.seedVersion || (raw.seeded ? 1 : 0), dashboard: raw.dashboard || null, snapshot: raw.snapshot || null };
     if (!data.seeded) seed(); else if (data.seedVersion < SEED_VERSION) migrate();
-    render(); checkLive();
+    // someone else changing something unrelated must not reload the win map you are looking at
+    const sameCompany = cidNow && JSON.stringify(data.companies[cidNow] || null) === before;
+    if (!(sameCompany && $("winFrame"))) render();
+    checkLive();
   }
   function seed(){
     const up = { seeded: true, seedVersion: SEED_VERSION, dashboard: SEED_DASHBOARD, snapshot: SEED_SNAPSHOT };
@@ -358,15 +372,6 @@
     loadLocal();
   }
 
-  /* ---------- the other tools' records, read only ---------- */
-  function loadToolData(force){
-    if (toolData.state === "loading" || (toolData.state === "done" && !force)) return;
-    if (!db){ toolData = { state:"local", sets:{}, errors:{} }; return; }
-    toolData = { state:"loading", sets:{}, errors:{} };
-    Promise.all(SOURCES.map(s => db.ref(s.path).once("value").then(v => { toolData.sets[s.key] = v.val() || {}; }).catch(e => { console.warn(s.path, e); toolData.errors[s.key] = true; toolData.sets[s.key] = {}; })))
-      .then(() => { toolData.state = "done"; if (currentCompanyId()) render(); });
-  }
-
   /* ---------- tools that are not live yet ---------- */
   function checkLive(){
     if (typeof fetch !== "function" || !/^https?:/i.test(location.origin)) return;
@@ -381,7 +386,15 @@
 
   /* ---------- helpers on the data ---------- */
   const companies = () => Object.keys(data.companies).map(id => Object.assign({ id }, data.companies[id])).sort((a, b) => String(a.name).localeCompare(String(b.name)));
-  const locationsOf = c => Object.keys(c.locations || {}).map(id => Object.assign({ id }, c.locations[id])).sort((a, b) => (b.parent ? 1 : 0) - (a.parent ? 1 : 0) || String(a.name).localeCompare(String(b.name)));
+  const shortLoc = (n, co) => { const m = String(n || "").match(/^(.*\S)\s+\((.+)\)$/); return m && String(co || "") && norm(m[1]) === norm(co) ? m[2] : String(n || ""); };
+  const byCreated = (a, b) => (a.createdAt || 0) - (b.createdAt || 0);
+  const listOf = obj => Object.keys(obj || {}).map(id => Object.assign({ id }, obj[id])).filter(x => x && typeof x === "object");
+  // a location has a HubSpot record when it was added from HubSpot (its key is the record id) or when you gave it a link
+  const hsIdOf = l => l.hsId || (/^\d{6,}$/.test(String(l.id)) ? String(l.id) : "");
+  const locationsOf = c => listOf(c.locations).filter(l => l.name).sort((a, b) => (b.parent ? 1 : 0) - (a.parent ? 1 : 0) || String(a.name).localeCompare(String(b.name)));
+  const contactsOf = c => listOf(c.contacts).filter(x => x.name).sort(byCreated);
+  const partnersOf = c => listOf(c.partners).filter(x => x.name).sort(byCreated);
+  const oppsOf = c => listOf(c.opps).filter(x => x.name).sort(byCreated);
   function companyFor(name){
     if (!name) return null;
     return companies().find(c => startsWithName(name, c.name) || (c.aliases || []).some(a => startsWithName(name, a))) || null;
@@ -419,7 +432,7 @@
   function autoHs(r){
     const co = companyFor(r.company); if (!co) return "";
     const locs = locationsOf(co), loc = locs.find(l => startsWithName(r.company, l.name)) || (locs.length === 1 ? locs[0] : null);
-    return loc ? hsCompany(loc.id) : "";
+    const hs = loc ? hsIdOf(loc) : ""; return hs ? hsCompany(hs) : "";
   }
   function focusRows(){
     return Object.keys(data.focus[week] || {}).map(id => Object.assign({ id }, data.focus[week][id])).filter(r => r && typeof r === "object")
@@ -467,7 +480,7 @@
 
   function renderCompanies(){
     const list = companies().filter(c => matchesSearch(c.name + " " + (c.domain || "") + " " + locationsOf(c).map(l => l.name).join(" ")));
-    const cards = list.map(c => { const n = locationsOf(c).length; return `<a class="co-card" href="#company/${attr(encodeURIComponent(c.id))}"><strong>${esc(c.name)}</strong><span>${n} HubSpot ${n === 1 ? "record" : "records"}${c.domain ? " · " + esc(c.domain) : ""}</span></a>`; }).join("");
+    const cards = list.map(c => { const n = locationsOf(c).length; return `<a class="co-card" href="#company/${attr(encodeURIComponent(c.id))}"><strong>${esc(c.name)}</strong><span>${n} ${n === 1 ? "location" : "locations"}${c.domain ? " · " + esc(c.domain) : ""}</span></a>`; }).join("");
     return `<section class="card"><div class="sec-head"><h2>Companies</h2></div>
       <div class="cogrid">${cards || `<div class="empty">${companies().length ? "No companies match that search." : "No companies yet."}</div>`}</div>
       <form class="coadd" data-act="co-quick" autocomplete="off"><input name="name" placeholder="Add a company: just type its name" aria-label="Company name"><button class="btn primary" type="submit">Add</button></form></section>`;
@@ -551,47 +564,68 @@
     $("view").innerHTML = `<div class="home"><div class="hl">${renderFocus()}</div><div class="hr">${renderCompanies()}${renderTools()}</div>${renderDashboard()}</div>`;
   }
 
-  /* ---------- company profile ---------- */
-  function renderProfile(id){
-    const c = data.companies[id];
-    if (!c){ $("view").innerHTML = `<a class="back" href="#">← BD Hub</a><div class="card"><p class="empty">That company isn’t on the hub${data.seeded ? "" : " yet"}.</p></div>`; return; }
-    loadToolData();
-    const locs = locationsOf(c), name = c.name;
-    const locRows = locs.map(l => `<tr><td><strong>${esc(l.name)}</strong>${l.parent ? `<span class="tag-parent">Parent</span>` : ""}</td><td style="text-align:right;white-space:nowrap"><a href="${attr(hsCompany(l.id))}" target="_blank" rel="noopener">HubSpot ↗</a></td></tr>`).join("");
-    const panelsHtml = SOURCES.map(s => {
-      const set = toolData.sets[s.key] || {};
-      const found = toolData.state === "done" ? Object.keys(set).filter(rid => set[rid] && typeof set[rid] === "object" && (startsWithName(s.nameOf(set[rid]), name) || (c.aliases || []).some(a => startsWithName(s.nameOf(set[rid]), a))))
-        .map(rid => ({ rid, rec: set[rid], nm: s.nameOf(set[rid]) || "Untitled" })).sort((a, b) => String(a.nm).localeCompare(String(b.nm))) : [];
-      const rows = found.map(r => {
-        const loc = s.single ? null : locs.find(l => startsWithName(r.nm, l.name)), meta = s.meta(r.rec);
-        return `<div class="rec"><div><div class="nm">${esc(r.nm)}</div><div class="mt">${loc ? `<span class="locchip">${esc(loc.city || loc.name)}</span>` : ""}${meta.map(m => `<span>${esc(m)}</span>`).join("")}</div></div><span class="rec-act"><a href="${attr(s.linkOf(r.rid))}" target="_blank" rel="noopener">Open ↗</a></span></div>`;
-      }).join("");
-      const man = Object.keys(((c.linked || {})[s.key]) || {}).map(lid => Object.assign({ lid }, c.linked[s.key][lid])).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-      const manRows = man.map(m => `<div class="rec" data-id="${attr(m.lid)}" data-src="${attr(s.key)}"><div><div class="nm">${esc(m.label || m.url)}</div><div class="mt"><span class="locchip">Linked by hand</span></div></div><span class="rec-act"><a href="${attr(safeUrl(m.url))}" target="_blank" rel="noopener">Open ↗</a><button class="link-btn" data-act="x-unlink">Remove</button></span></div>`).join("");
-      const err = toolData.errors[s.key] ? `<div class="none">Couldn’t read this tool just now.</div>` : "";
-      const loading = toolData.state === "loading" || toolData.state === "idle" ? `<div class="none">Looking…</div>` : "";
-      const start = s.key === "winmap" ? `<div class="startrow"><input id="wmName" list="wmList" value="${attr(name)}" aria-label="Name for the new win map"><datalist id="wmList">${locs.map(l => `<option value="${attr(l.name)}">`).join("")}</datalist><button class="btn small" data-act="wm-start">Start a win map</button></div>` : "";
-      const noneText = s.single ? `None yet. Name it “${esc(name)}” in the tool.` : `None yet.`;
-      const empty = !rows && !manRows ? (err || loading || (toolData.state === "local" ? "" : `<div class="none">${noneText}</div>`)) : "";
-      const many = s.single && found.length > 1 ? `<div class="none" style="margin-top:6px">More than one found.</div>` : "";
-      const linkBtn = s.single && (rows || manRows) ? "" : `<button class="link-btn tlinkbtn" data-act="x-link" data-src="${attr(s.key)}">+ Link ${s.single ? "it" : "one"}</button>`;
-      return `<div class="panel"><h4>${esc(s.title)}<a href="${attr(s.home)}" target="_blank" rel="noopener">Open tool ↗</a></h4>${rows}${manRows}${many}${empty}${linkBtn}${start}</div>`;
+  /* ---------- company page: locations, key contacts, partners and suppliers, opportunities ---------- */
+  const COLS = ["External Influencer", "Internal Influencer", "Decision Maker"];
+  const LANE_H = 440, CARD_H = 58, USABLE = LANE_H - CARD_H;
+  const scoreY = s => (10 - s) / 10 * USABLE;
+  const yScore = yRaw => { const y = Math.max(0, Math.min(USABLE, yRaw - CARD_H / 2)); return Math.round(10 * (1 - y / USABLE) * 2) / 2; };
+  let openOpp = null, oppTab = "win", selContact = null, dragContact = null;
+
+  function stakeBoard(c, o){
+    const contacts = contactsOf(c), stake = o.stake || {};
+    const placed = contacts.filter(x => stake[x.id]), loose = contacts.filter(x => !stake[x.id]);
+    const tray = loose.map(x => `<button type="button" class="cchip ${selContact === x.id ? "sel" : ""}" draggable="true" data-contact="${attr(x.id)}" data-act="st-sel">${esc(x.name)}${x.role ? `<small>${esc(x.role)}</small>` : ""}</button>`).join("");
+    const lanes = COLS.map((name, ci) => {
+      const cards = placed.filter(x => Number(stake[x.id].col) === ci).map(x => { const s = stake[x.id];
+        return `<div class="pcard ${selContact === x.id ? "sel" : ""}" draggable="true" data-contact="${attr(x.id)}" data-act="st-sel" style="top:${scoreY(Number(s.score))}px"><span class="pn">${esc(x.name)}</span>${x.role ? `<span class="pr">${esc(x.role)}</span>` : ""}<span class="ps">${Number(s.score).toFixed(1)}</span><button type="button" class="pe" data-act="st-edit" aria-label="Edit ${attr(x.name)}">Edit</button></div>`; }).join("");
+      return `<div class="lanecol"><div class="lane-head">${esc(name)}</div><div class="lane" data-col="${ci}" style="height:${LANE_H}px">${cards}</div></div>`;
     }).join("");
-    const intro = toolData.state === "local" ? `<p class="muted">Not connected to the shared database, so tool records can’t be found here. You can still link by hand.</p>` : "";
-    const links = Object.keys(c.links || {}).map(lid => Object.assign({ id: lid }, c.links[lid])).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
+    return `<div class="stk"><div class="tray"><span class="trayl">Contacts</span>${tray || `<span class="muted">${contacts.length ? "All placed." : "No contacts yet."}</span>`}<button class="link-btn" data-act="ct-add">+ Add contact</button></div>
+      <p class="muted">Drag a contact onto the board, or tap one and then tap the board. Higher means more supportive.</p>
+      <div class="board"><div class="axis"><span style="top:0">Promoter</span><span style="top:50%">Neutral</span><span style="bottom:0">Detractor</span></div>${lanes}</div></div>`;
+  }
+  function winMapSrc(c, o){ return SITE + "win-map/win-map.html?new=" + encodeURIComponent(o.winMapName || (c.name + " - " + o.name)); }
+  function oppBody(c, o){
+    const tabs = `<div class="tabs"><button type="button" class="${oppTab === "win" ? "on" : ""}" data-act="opp-tab" data-tab="win">Win map</button><button type="button" class="${oppTab === "map" ? "on" : ""}" data-act="opp-tab" data-tab="map">Stakeholder &amp; influence map</button></div>`;
+    if (oppTab === "win"){
+      const src = winMapSrc(c, o);
+      return tabs + `<div class="winwrap"><iframe id="winFrame" class="winframe" src="${attr(src + "&embed=1")}" title="Win map for ${attr(o.name)}"></iframe><p class="muted"><a href="${attr(src)}" target="_blank" rel="noopener">Open the win map on its own page ↗</a></p></div>`;
+    }
+    return tabs + stakeBoard(c, o);
+  }
+
+  function renderProfile(id){
+    const c = data.companies[id] && Object.assign({ id }, data.companies[id]);
+    if (!c){ $("view").innerHTML = `<a class="back" href="#">← BD Hub</a><div class="card"><p class="empty">That company isn’t on the hub${data.seeded ? "" : " yet"}.</p></div>`; return; }
+    const locs = locationsOf(c), contacts = contactsOf(c), partners = partnersOf(c), opps = oppsOf(c), name = c.name;
+    if (openOpp && !opps.some(o => o.id === openOpp)) openOpp = null;
+    $("locList").innerHTML = locs.map(l => `<option value="${attr(l.name)}">`).join("");
+    const nAl = locs.filter(l => l.aligned).length;
+    const locRows = locs.map(l => { const hs = hsIdOf(l);
+      return `<div class="lrow" data-id="${attr(l.id)}"><input type="checkbox" data-act="loc-al" ${l.aligned ? "checked" : ""} aria-label="Aligned: ${attr(l.name)}"><span class="lname">${esc(shortLoc(l.name, name))}${l.parent ? `<span class="tag-parent">Parent</span>` : ""}</span>${hs ? `<a href="${attr(hsCompany(hs))}" target="_blank" rel="noopener">HubSpot ↗</a>` : ""}<button class="link-btn" data-act="loc-edit">Edit</button></div>`; }).join("");
+    const contactRows = contacts.map(x => `<div class="crow" data-id="${attr(x.id)}" data-contact="${attr(x.id)}" draggable="true" title="Drag onto a stakeholder map"><span class="grip" aria-hidden="true">⠿</span><div class="cmain"><strong>${esc(x.name)}</strong>${x.role ? `<span class="role">${esc(x.role)}</span>` : ""}<div class="based">${x.based ? "Based in " + esc(shortLoc(x.based, name)) : "Location not set"}</div></div><button class="link-btn" data-act="ct-edit">Edit</button></div>`).join("");
+    const partnerRows = partners.map(p => `<div class="prow" data-id="${attr(p.id)}"><div class="phead"><strong>${esc(p.name)}</strong><span class="chip">${esc(p.kind || "Fit-out partner")}</span><span class="grow"></span><button class="link-btn" data-act="pt-edit">Edit</button></div><textarea class="pnotes" data-act="pt-notes" rows="1" placeholder="Notes" aria-label="Notes on ${attr(p.name)}">${esc(p.notes || "")}</textarea></div>`).join("");
+    const oppRows = opps.map(o => { const open = openOpp === o.id, hs = safeUrl(o.url);
+      return `<div class="opp ${open ? "open" : ""}" data-id="${attr(o.id)}"><div class="opp-bar"><button type="button" class="opp-head" data-act="opp-toggle" aria-expanded="${open}"><span class="chev">▶</span><strong>${esc(o.name)}</strong>${o.location ? `<span class="locchip">${esc(shortLoc(o.location, name))}</span>` : ""}</button>${hs ? `<a href="${attr(hs)}" target="_blank" rel="noopener">HubSpot ↗</a>` : ""}<button class="link-btn" data-act="opp-edit">Edit</button></div>${open ? oppBody(c, o) : ""}</div>`; }).join("");
+    const links = Object.keys(c.links || {}).map(lid => Object.assign({ id: lid }, c.links[lid])).sort(byCreated)
       .map(l => `<div class="linkrow" data-id="${attr(l.id)}"><a href="${attr(safeUrl(l.url))}" target="_blank" rel="noopener"><strong>${esc(l.label || l.url)}</strong> ↗</a><button class="btn small danger" data-act="l-del">Remove</button></div>`).join("");
     $("view").innerHTML = `<a class="back" href="#">← BD Hub</a>
-      <div class="ph"><div><p class="eyebrow">Company profile</p><h2 class="big">${esc(name)}</h2><p class="muted">${[c.domain ? esc(c.domain) : "", locs.length ? locs.length + " HubSpot " + (locs.length === 1 ? "record" : "records") : ""].filter(Boolean).join(" · ")}</p></div>
+      <div class="ph"><div><p class="eyebrow">Company</p><h2 class="big">${esc(name)}</h2>${c.domain ? `<p class="muted">${esc(c.domain)}</p>` : ""}</div>
         <div><button class="btn" data-act="co-edit">Edit</button> <button class="btn danger" data-act="co-del">Delete</button></div></div>
-      <div class="pcols"><div>
-        <section class="card"><div class="sec-head"><h3>HubSpot</h3></div>
-          ${locRows ? `<div class="tablewrap"><table class="loc"><thead><tr><th>Record (one per location)</th><th></th></tr></thead><tbody>${locRows}</tbody></table></div>` : ""}
-          <p style="margin:${locRows ? "14px" : "8px"} 0 0"><a class="btn ${locRows ? "" : "primary"}" href="${attr(HS + "objects/0-2/views/all/list?query=" + encodeURIComponent(name))}" target="_blank" rel="noopener">Find all locations in HubSpot ↗</a></p></section>
-        <section class="card"><div class="sec-head"><h3>Other links</h3></div>${links || `<div class="none" style="margin-top:6px">None yet.</div>`}
-          <form class="addlink" data-act="l-add" autocomplete="off"><input name="label" placeholder="What it is, e.g. SharePoint folder" aria-label="Link name"><input name="url" placeholder="Paste the link" aria-label="Link address"><button class="btn primary" type="submit">Add link</button></form></section>
-      </div><div>
-        <section class="card"><div class="sec-head"><h3>In your tools</h3><span class="grow"></span><button class="link-btn" data-act="tools-refresh">Refresh</button></div>${intro}<div class="panels">${panelsHtml}</div></section>
-      </div></div>`;
+      <div class="pgrid">
+        <section class="card"><div class="sec-head"><h3>Locations</h3><span class="grow"></span>${locs.length ? `<span class="muted">${nAl} of ${locs.length} aligned</span>` : ""}</div>
+          ${locRows ? `<div class="lhead"><span>Aligned</span></div>${locRows}` : `<div class="none">None yet.</div>`}
+          <form class="ladd" data-act="loc-add" autocomplete="off"><input name="names" placeholder="Add locations, e.g. Edinburgh, Leeds" aria-label="Add locations"><button class="btn primary" type="submit">Add</button></form></section>
+        <section class="card"><div class="sec-head"><h3>Key contacts</h3><span class="grow"></span><button class="btn small" data-act="ct-add">+ Add contact</button></div>
+          ${contactRows || `<div class="none">None yet.</div>`}</section>
+        <section class="card"><div class="sec-head"><h3>Fit-out partners and suppliers</h3><span class="grow"></span><button class="btn small" data-act="pt-add">+ Add</button></div>
+          ${partnerRows || `<div class="none">None yet.</div>`}</section>
+      </div>
+      <section class="card"><div class="sec-head"><h3>Opportunities</h3></div>
+        ${oppRows || `<div class="none">None yet.</div>`}
+        <form class="oadd" data-act="opp-add" autocomplete="off"><input name="name" placeholder="Add an opportunity, e.g. Edinburgh office move" aria-label="Opportunity name"><select name="loc" aria-label="Location"><option value="">Whole company</option>${locs.map(l => `<option value="${attr(l.name)}">${esc(shortLoc(l.name, name))}</option>`).join("")}</select><button class="btn primary" type="submit">Add</button></form></section>
+      <section class="card"><div class="sec-head"><h3>Other links</h3></div>${links || `<div class="none">None yet.</div>`}
+        <form class="addlink" data-act="l-add" autocomplete="off"><input name="label" placeholder="What it is, e.g. SharePoint folder" aria-label="Link name"><input name="url" placeholder="Paste the link" aria-label="Link address"><button class="btn primary" type="submit">Add link</button></form></section>`;
   }
 
   /* ---------- modal ---------- */
@@ -601,7 +635,7 @@
       f.type === "textarea" ? `<textarea id="mf_${f.key}" rows="${f.rows || 4}" placeholder="${attr(f.placeholder || "")}">${esc(f.value || "")}</textarea>`
       : f.type === "select" ? `<select id="mf_${f.key}">${f.options.map(op => `<option value="${attr(op[0])}" ${op[0] === f.value ? "selected" : ""}>${esc(op[1])}</option>`).join("")}</select>`
       : `<input id="mf_${f.key}" ${f.list ? `list="${f.list}"` : ""} value="${attr(f.value || "")}" placeholder="${attr(f.placeholder || "")}">`}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ""}</div>`;
-    m.innerHTML = `<div class="m-back"></div><div class="m-box" role="dialog" aria-modal="true" aria-label="${attr(o.title)}"><h3>${esc(o.title)}</h3><form>${o.fields.map(field).join("")}<div class="m-act">${o.onDelete ? `<button type="button" class="btn danger" id="m_del">Delete</button>` : ""}<span class="grow"></span><button type="button" class="btn" id="m_cancel">Cancel</button><button type="submit" class="btn primary">${esc(o.saveLabel || "Save")}</button></div></form></div>`;
+    m.innerHTML = `<div class="m-back"></div><div class="m-box" role="dialog" aria-modal="true" aria-label="${attr(o.title)}"><h3>${esc(o.title)}</h3><form>${o.fields.map(field).join("")}<div class="m-act">${o.onDelete ? `<button type="button" class="btn danger" id="m_del">${esc(o.deleteLabel || "Delete")}</button>` : ""}<span class="grow"></span><button type="button" class="btn" id="m_cancel">Cancel</button><button type="submit" class="btn primary">${esc(o.saveLabel || "Save")}</button></div></form></div>`;
     const close = () => { m.innerHTML = ""; document.removeEventListener("keydown", onKey); };
     const onKey = e => { if (e.key === "Escape") close(); };
     document.addEventListener("keydown", onKey);
@@ -645,43 +679,56 @@
     patchMany(up);
   }
 
-  /* company add / edit */
+  /* company page boxes */
   // a HubSpot company link looks like .../contacts/<account>/record/0-2/<company id>; a bare number is taken as the company id
   const companyIdFrom = s => { const m = String(s || "").match(/\/(?:record\/0-2|company)\/(\d+)/) || String(s || "").match(/^\s*(\d{5,})\s*$/); return m ? m[1] : null; };
-  const parseLocations = text => {
-    const out = {}; let skipped = 0;
-    String(text || "").split("\n").map(l => l.trim()).filter(Boolean).forEach(line => {
-      const parent = line.startsWith("*"); if (parent) line = line.slice(1).trim();
-      const cut = line.indexOf("|"), nm = (cut < 0 ? line : line.slice(0, cut)).trim(), id = cut < 0 ? null : companyIdFrom(line.slice(cut + 1));
-      if (!nm || !id){ skipped++; return; }
-      const cm = nm.match(/\(([^)]+)\)\s*$/);
-      out[id] = Object.assign({ name: nm, city: cm ? cm[1].trim() : "" }, parent ? { parent: true } : {});
-    });
-    return { locations: out, skipped };
-  };
-  const locationsText = c => locationsOf(c).map(l => (l.parent ? "* " : "") + l.name + " | " + hsCompany(l.id)).join("\n");
   function editCompany(id){
-    const c = id ? data.companies[id] : {};
-    openModal({ title: id ? "Edit company" : "Add a company",
-      fields: [
-        { key:"name", label:"Business name", value:c.name, required:true, placeholder:"e.g. DLA Piper" },
-        { key:"domain", label:"Website (optional)", value:c.domain, placeholder:"e.g. dlapiper.com" },
-        { key:"aliases", label:"Also known as (optional)", value:(c.aliases || []).join(", "), hint:"Other names your tools might use, separated by commas." },
-        { key:"locs", label:"HubSpot company records, one per line", type:"textarea", rows:7, value: id ? locationsText(c) : "", placeholder:"DLA Piper (Leeds) | https://app.hubspot.com/…/record/0-2/37387936370", hint:"Name, then | then the HubSpot company link (or just its number). Put * at the start of the parent record." }
-      ],
-      onSave: v => {
-        const cid = id || slug(v.name);
-        if (!id && data.companies[cid]){ toast("That company is already on the hub."); return false; }
-        const keep = id ? data.companies[id] : {};
-        const pl = parseLocations(v.locs);
-        const rec = { name: v.name, domain: v.domain.replace(/^https?:\/\//i, "").replace(/\/.*$/, ""), createdAt: keep.createdAt || Date.now(), locations: pl.locations };
-        if (pl.skipped) toast(pl.skipped + (pl.skipped === 1 ? " line was skipped" : " lines were skipped") + ": each needs a name, then |, then the HubSpot company link.");
-        const al = v.aliases.split(",").map(s => s.trim()).filter(Boolean); if (al.length) rec.aliases = al;
-        if (keep.links) rec.links = keep.links;
-        put("companies/" + cid, rec);
-        if (!id) location.hash = "company/" + encodeURIComponent(cid);
-      },
-      onDelete: id ? () => { put("companies/" + id, null); location.hash = ""; toast("Company removed from the hub."); } : null, deleteConfirm: "Remove " + (c.name || "this company") + " from the hub? Nothing in HubSpot or your tools is touched." });
+    const c = data.companies[id];
+    openModal({ title:"Edit company", fields:[{ key:"name", label:"Business name", value:c.name, required:true }, { key:"domain", label:"Website (optional)", value:c.domain }],
+      onSave: v => { patchMany({ ["companies/" + id + "/name"]: v.name, ["companies/" + id + "/domain"]: v.domain.replace(/^https?:\/\//i, "").replace(/\/.*$/, "") }); render(); },
+      onDelete: () => { put("companies/" + id, null); location.hash = ""; toast("Company removed from the hub."); }, deleteConfirm: "Remove " + c.name + " from the hub? Nothing in HubSpot or your tools is touched." });
+  }
+  function editLocation(cid, lid){
+    const l = data.companies[cid].locations[lid];
+    openModal({ title:"Edit location", fields:[{ key:"name", label:"Location", value:l.name, required:true }, { key:"hs", label:"HubSpot company link (optional)", value: l.hsId ? hsCompany(l.hsId) : (/^\d{6,}$/.test(lid) ? hsCompany(lid) : ""), placeholder:"Paste the record’s link" }],
+      onSave: v => { const hsId = companyIdFrom(v.hs); if (v.hs && !hsId){ toast("I couldn’t find a HubSpot company in that link."); return false; }
+        patchMany({ ["companies/" + cid + "/locations/" + lid + "/name"]: v.name, ["companies/" + cid + "/locations/" + lid + "/hsId"]: hsId || null }); render(); },
+      onDelete: () => { put("companies/" + cid + "/locations/" + lid, null); render(); }, deleteConfirm: "Remove this location?" });
+  }
+  function editContact(cid, xid){
+    const x = xid ? data.companies[cid].contacts[xid] : {};
+    openModal({ title: xid ? "Edit contact" : "Add a key contact", fields:[{ key:"name", label:"Name", value:x.name, required:true }, { key:"role", label:"Role or job title", value:x.role }, { key:"based", label:"Based in", value:x.based, list:"locList", placeholder:"A location, or type one" }],
+      onSave: v => { const id = xid || uid(); put("companies/" + cid + "/contacts/" + id, { name:v.name, role:v.role, based:v.based, createdAt: xid ? (x.createdAt || Date.now()) : Date.now() }); render(); },
+      onDelete: xid ? () => { const up = { ["companies/" + cid + "/contacts/" + xid]: null };
+        listOf(data.companies[cid].opps).forEach(o => { if (o.stake && o.stake[xid]) up["companies/" + cid + "/opps/" + o.id + "/stake/" + xid] = null; });
+        patchMany(up); selContact = null; render(); } : null, deleteConfirm: "Remove this contact? They’re also taken off any stakeholder maps." });
+  }
+  const PARTNER_KINDS = ["Fit-out partner", "Third-party supplier"];
+  function editPartner(cid, pid){
+    const p = pid ? data.companies[cid].partners[pid] : {};
+    openModal({ title: pid ? "Edit partner or supplier" : "Add a partner or supplier", fields:[{ key:"name", label:"Name", value:p.name, required:true }, { key:"kind", label:"Type", type:"select", value:p.kind || PARTNER_KINDS[0], options:PARTNER_KINDS.map(k => [k, k]) }, { key:"notes", label:"Notes", type:"textarea", rows:4, value:p.notes }],
+      onSave: v => { const id = pid || uid(); put("companies/" + cid + "/partners/" + id, { name:v.name, kind:v.kind, notes:v.notes, createdAt: pid ? (p.createdAt || Date.now()) : Date.now() }); render(); },
+      onDelete: pid ? () => { put("companies/" + cid + "/partners/" + pid, null); render(); } : null, deleteConfirm: "Remove this from the company?" });
+  }
+  function editOpp(cid, oid){
+    const o = data.companies[cid].opps[oid], locs = locationsOf(Object.assign({ id:cid }, data.companies[cid]));
+    openModal({ title:"Edit opportunity", fields:[{ key:"name", label:"Name", value:o.name, required:true }, { key:"loc", label:"Location", type:"select", value:o.location || "", options:[["", "Whole company"]].concat(locs.map(l => [l.name, l.name])) }, { key:"url", label:"HubSpot link (optional)", value:o.url }],
+      onSave: v => { patchMany({ ["companies/" + cid + "/opps/" + oid + "/name"]: v.name, ["companies/" + cid + "/opps/" + oid + "/location"]: v.loc, ["companies/" + cid + "/opps/" + oid + "/url"]: v.url ? safeUrl(v.url) : "" }); render(); },
+      onDelete: () => { put("companies/" + cid + "/opps/" + oid, null); if (openOpp === oid) openOpp = null; render(); }, deleteConfirm: "Remove this opportunity and its stakeholder map? Its win map stays in the Win Map tool." });
+  }
+  function editStake(cid, oid, xid){
+    const s = data.companies[cid].opps[oid].stake[xid], x = data.companies[cid].contacts[xid];
+    openModal({ title: x.name + " on the map", fields:[{ key:"score", label:"How supportive (0 = detractor, 10 = promoter)", value:String(s.score) }, { key:"col", label:"Influence", type:"select", value:String(s.col), options:COLS.map((n, i) => [String(i), n]) }, { key:"notes", label:"Notes", type:"textarea", rows:3, value:s.notes }],
+      onSave: v => { const n = parseFloat(v.score); if (!isFinite(n) || n < 0 || n > 10){ toast("The score is a number from 0 to 10."); return false; }
+        put("companies/" + cid + "/opps/" + oid + "/stake/" + xid, { col: Number(v.col), score: Math.round(n * 2) / 2, notes: v.notes }); render(); },
+      deleteLabel:"Back to contacts", onDelete: () => { put("companies/" + cid + "/opps/" + oid + "/stake/" + xid, null); render(); }, deleteConfirm:"Take them off the map?" });
+  }
+  function placeContact(contactId, col, clientY, laneEl){
+    const cid = currentCompanyId(), oid = openOpp; if (!cid || !oid || !contactId) return;
+    const o = data.companies[cid] && data.companies[cid].opps && data.companies[cid].opps[oid]; if (!o || !data.companies[cid].contacts || !data.companies[cid].contacts[contactId]) return;
+    const score = yScore(clientY - laneEl.getBoundingClientRect().top), prev = (o.stake && o.stake[contactId]) || {};
+    put("companies/" + cid + "/opps/" + oid + "/stake/" + contactId, Object.assign({}, prev, { col, score }));
+    selContact = null; dragContact = null; render();
   }
 
   function editFocus(fid){
@@ -727,8 +774,17 @@
     }
     else if (act === "co-edit") editCompany(currentCompanyId());
     else if (act === "co-del") { const cid = currentCompanyId(), c = data.companies[cid]; if (c && confirm("Remove " + c.name + " from the hub? Nothing in HubSpot or your tools is touched.")){ put("companies/" + cid, null); location.hash = ""; toast("Company removed from the hub."); } }
-    else if (act === "tools-refresh") { loadToolData(true); render(); }
-    else if (act === "wm-start") { const n = ($("wmName").value || "").trim() || (data.companies[currentCompanyId()] || {}).name || ""; window.open(SITE + "win-map/win-map.html?new=" + encodeURIComponent(n), "_blank", "noopener"); }
+    else if (act === "loc-al") { put("companies/" + currentCompanyId() + "/locations/" + id + "/aligned", b.checked); render(); }
+    else if (act === "loc-edit") editLocation(currentCompanyId(), id);
+    else if (act === "ct-add") editContact(currentCompanyId(), null);
+    else if (act === "ct-edit") editContact(currentCompanyId(), id);
+    else if (act === "pt-add") editPartner(currentCompanyId(), null);
+    else if (act === "pt-edit") editPartner(currentCompanyId(), id);
+    else if (act === "opp-toggle") { openOpp = openOpp === id ? null : id; oppTab = "win"; selContact = null; render(); }
+    else if (act === "opp-tab") { oppTab = b.dataset.tab; selContact = null; render(); }
+    else if (act === "opp-edit") editOpp(currentCompanyId(), id);
+    else if (act === "st-sel") { selContact = selContact === b.dataset.contact ? null : b.dataset.contact; render(); }
+    else if (act === "st-edit") { e.stopPropagation(); editStake(currentCompanyId(), openOpp, b.closest("[data-contact]").dataset.contact); }
     else if (act === "l-del") { const cid = currentCompanyId(); put("companies/" + cid + "/links/" + id, null); render(); }
     else if (act === "t-add") editTool(null, b.dataset.section);
     else if (act === "t-edit") editTool(id);
@@ -750,12 +806,6 @@
       openModal({ title:"Update the numbers", saveLabel:"Save numbers", fields:[{ key:"text", label:"Paste the numbers here", type:"textarea", rows:7, value:snapshotText(s), required:true, hint:"Ask Claude for “the hub numbers” and paste what it gives you. Or change them by hand." }],
         onSave: v => { const r = parseSnapshot(v.text); if (r.error){ toast(r.error); return false; } put("snapshot", r.snapshot); render(); toast("Numbers updated."); } });
     }
-    else if (act === "x-link") {
-      const src = SOURCES.find(s => s.key === b.dataset.src), cid = currentCompanyId();
-      openModal({ title:"Link to " + (src ? src.title.replace(/s$/, "") : "something"), saveLabel:"Link it", fields:[{ key:"label", label:"Name", required:true, placeholder:"e.g. Weightmans account map" }, { key:"url", label:"Link", required:true, placeholder:"Paste the link, e.g. a Claude page or the tool’s page" }],
-        onSave: v => { const url = safeUrl(v.url); if (!url){ toast("That link doesn’t look right."); return false; } put("companies/" + cid + "/linked/" + b.dataset.src + "/" + uid(), { label:v.label, url, createdAt:Date.now() }); render(); } });
-    }
-    else if (act === "x-unlink") { const cid = currentCompanyId(); put("companies/" + cid + "/linked/" + row.dataset.src + "/" + id, null); render(); }
     else if (act === "f-done") { put("focus/" + week + "/" + id + "/done", b.checked); render(); }
   });
   document.addEventListener("submit", e => {
@@ -775,6 +825,17 @@
       put("companies/" + cid, { name, createdAt: Date.now() });
       if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
       location.hash = "company/" + encodeURIComponent(cid);
+    } else if (f.dataset.act === "loc-add") {
+      const cid = currentCompanyId(), c = data.companies[cid]; if (!c) return;
+      const have = new Set(locationsOf(Object.assign({ id: cid }, c)).map(l => norm(l.name))), up = {}; let n = 0;
+      String(fd.names || "").split(/[,\n]/).map(s => s.trim()).filter(Boolean).forEach(nm => { if (have.has(norm(nm))) return; have.add(norm(nm)); up["companies/" + cid + "/locations/" + uid() + n] = { name: nm, aligned: false, createdAt: Date.now() + n }; n++; });
+      if (!n){ toast("Type a location first."); return; }
+      patchMany(up); if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); render();
+    } else if (f.dataset.act === "opp-add") {
+      const cid = currentCompanyId(), c = data.companies[cid], nm = (fd.name || "").trim(); if (!c) return;
+      if (!nm){ toast("Name the opportunity first."); return; }
+      const oid = uid(); put("companies/" + cid + "/opps/" + oid, { name: nm, location: fd.loc || "", createdAt: Date.now(), winMapName: c.name + " - " + nm });
+      openOpp = oid; oppTab = "win"; if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); render();
     } else if (f.dataset.act === "l-add") {
       const url = safeUrl(fd.url); if (!url){ toast("Paste the link first."); return; }
       const cid = currentCompanyId(); put("companies/" + cid + "/links/" + uid(), { label: (fd.label || "").trim() || url, url, createdAt: Date.now() });
@@ -784,7 +845,22 @@
   });
   $("search").addEventListener("input", e => { search = e.target.value; if (!currentCompanyId()) renderHome(); });
   $("editBtn").addEventListener("click", () => { editMode = !editMode; renderHome(); });
+  // dragging a contact (from the company page or the tray) onto the stakeholder board, or tap a contact then tap the board
+  document.addEventListener("dragstart", e => { const el = e.target.closest && e.target.closest("[data-contact]"); if (!el) return; dragContact = el.dataset.contact; try { e.dataTransfer.setData("text/plain", dragContact); e.dataTransfer.effectAllowed = "move"; } catch (x) {} });
+  document.addEventListener("dragover", e => { if (e.target.closest && e.target.closest(".lane")) e.preventDefault(); });
+  document.addEventListener("drop", e => {
+    const lane = e.target.closest && e.target.closest(".lane"); if (!lane) return; e.preventDefault();
+    let cid = dragContact; try { cid = e.dataTransfer.getData("text/plain") || cid; } catch (x) {}
+    placeContact(cid, Number(lane.dataset.col), e.clientY, lane);
+  });
+  document.addEventListener("click", e => {
+    const lane = e.target.closest && e.target.closest(".lane");
+    if (lane && selContact && !e.target.closest("[data-act]")) placeContact(selContact, Number(lane.dataset.col), e.clientY, lane);
+  });
+  document.addEventListener("change", e => { const el = e.target; if (el && el.dataset && el.dataset.act === "pt-notes"){ const row = el.closest("[data-id]"); put("companies/" + currentCompanyId() + "/partners/" + row.dataset.id + "/notes", el.value); } });
+  setInterval(() => { const f = $("winFrame"); if (!f) return; try { const d = f.contentDocument; if (d && d.documentElement) f.style.height = Math.max(720, d.documentElement.scrollHeight + 8) + "px"; } catch (e) {} }, 700);
   window.addEventListener("hashchange", () => {
+    openOpp = null; selContact = null;
     const a = document.activeElement; if (a && $("view").contains(a) && a.blur) a.blur();   // moving to another page always redraws, even with the cursor in a box
     window.scrollTo(0, 0); render();
   });
