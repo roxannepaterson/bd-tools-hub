@@ -235,7 +235,7 @@
   const DEFAULT_OWNERS = ["Roxanne", "Alison", "Lyndon", "Michael"];
 
   /* ---------- what the hub starts with (written to the database once, then it is yours to edit) ---------- */
-  const SEED_VERSION = 7;
+  const SEED_VERSION = 8;
   const SEED_SECTIONS = [["maps","Win maps and account maps",0],["targeting","Targeting and leads",1]];
   const SEED_TOOLS = [
     ["winmap","maps","Win Map","Strategy On A Page for a live deal.",SITE+"win-map/win-map.html",""],
@@ -245,9 +245,8 @@
     ["lead","targeting","Lead Assessment","Score a lead: pursue, nurture or leave.",SITE+"lead-verifier/lead-assessment.html",""],
     ["lease","targeting","Lease Event Countdown","Time to lease break for a prospect.",SITE+"lease-timeline/index.html",""]
   ];
-  // the pipeline gateway criteria, as you set them out: nine stages with three Go/No Go gates between them. Editable on the page.
+  // the pipeline gateway criteria, as you set them out: eight stages (Nurture is left out) with three Go/No Go gates between them. Editable on the page.
   const SEED_GATEWAY = [
-    ["nurture","stage","Nurture","Important relationship established; no live opportunity",["BD team agree to add to the Nurture list"]],
     ["whisper","stage","Whisper","Potential project identified",["BD team agree to dig into the opportunity"]],
     ["mql","stage","MQL","Validated opportunity",["Defined fit-out / refurbishment","Compelling event","Approximate value","Primary contact","Aligned with target profiles"]],
     ["engaged","stage","Engaged","Meaningful dialogue underway",["Discovery call completed","Win Map in development"]],
@@ -360,6 +359,7 @@
     }
     if (!data.snapshot) up.snapshot = SEED_SNAPSHOT;
     if (!data.gateway) up.gateway = seedGateway();
+    else if (data.seedVersion < 8 && data.gateway.nurture) up["gateway/nurture"] = null;   // Nurture was taken out of the criteria
     if (data.seedVersion < 5){
       // a focus used to carry one "next action" and one owner: it becomes a focus with that as its first action
       Object.keys(data.focus).forEach(wk => Object.keys(data.focus[wk] || {}).forEach(fid => {
@@ -767,7 +767,8 @@
       onSave: v => {
         const lines = v.lines.split("\n").map(x => x.trim()).filter(Boolean), byText = {}; items.forEach(x => { byText[x.text] = x.id; });
         const next = {}; lines.forEach((text, j) => { const id = byText[text] && !next[byText[text]] ? byText[text] : sid + "-" + uid(); next[id] = { text, order: j }; });
-        patchMany({ ["gateway/" + sid + "/name"]: v.name, ["gateway/" + sid + "/meaning"]: v.meaning, ["gateway/" + sid + "/items"]: Object.keys(next).length ? next : null }); render(); } });
+        patchMany({ ["gateway/" + sid + "/name"]: v.name, ["gateway/" + sid + "/meaning"]: v.meaning, ["gateway/" + sid + "/items"]: Object.keys(next).length ? next : null }); render(); },
+      deleteLabel:"Remove this stage", onDelete: () => { put("gateway/" + sid, null); render(); }, deleteConfirm:"Remove " + s.name + " from the criteria for every opportunity?" });
   }
   function editStake(cid, oid, xid){
     const s = data.companies[cid].opps[oid].stake[xid], x = data.companies[cid].contacts[xid];
