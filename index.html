@@ -83,6 +83,8 @@
   .ttag.warn{ color:#b4501c; }
   .tcard.dead{ opacity:.6; box-shadow:none; } .tcard.dead:hover{ transform:none; box-shadow:none; } .tcard.dead .ttag{ color:var(--soft); }
   .tctl{ display:flex; gap:6px; padding:0 14px 12px; flex-wrap:wrap; }
+  .coadd{ display:flex; gap:8px; margin-top:16px; } .coadd input{ flex:1; min-width:0; padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:#fff; }
+  .startrow input{ flex:1; min-width:0; padding:6px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; }
   .addtile{ border:2px dashed var(--line); border-radius:12px; background:transparent; color:var(--accent); font-weight:600; padding:18px; cursor:pointer; min-height:70px; }
   .addtile:hover{ border-color:var(--accent); }
   .secctl{ display:flex; gap:6px; }
@@ -466,8 +468,9 @@
   function renderCompanies(){
     const list = companies().filter(c => matchesSearch(c.name + " " + (c.domain || "") + " " + locationsOf(c).map(l => l.name).join(" ")));
     const cards = list.map(c => { const n = locationsOf(c).length; return `<a class="co-card" href="#company/${attr(encodeURIComponent(c.id))}"><strong>${esc(c.name)}</strong><span>${n} HubSpot ${n === 1 ? "record" : "records"}${c.domain ? " · " + esc(c.domain) : ""}</span></a>`; }).join("");
-    return `<section class="card"><div class="sec-head"><h2>Companies</h2><span class="grow"></span><button class="btn small" data-act="co-add">+ Add company</button></div>
-      <div class="cogrid">${cards || `<div class="empty">${companies().length ? "No companies match that search." : "No companies yet."}</div>`}</div></section>`;
+    return `<section class="card"><div class="sec-head"><h2>Companies</h2></div>
+      <div class="cogrid">${cards || `<div class="empty">${companies().length ? "No companies match that search." : "No companies yet."}</div>`}</div>
+      <form class="coadd" data-act="co-quick" autocomplete="off"><input name="name" placeholder="Add a company: just type its name" aria-label="Company name"><button class="btn primary" type="submit">Add</button></form></section>`;
   }
 
   const sectionList = () => Object.keys(data.sections).map(id => Object.assign({ id }, data.sections[id])).sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -567,7 +570,7 @@
       const manRows = man.map(m => `<div class="rec" data-id="${attr(m.lid)}" data-src="${attr(s.key)}"><div><div class="nm">${esc(m.label || m.url)}</div><div class="mt"><span class="locchip">Linked by hand</span></div></div><span class="rec-act"><a href="${attr(safeUrl(m.url))}" target="_blank" rel="noopener">Open ↗</a><button class="link-btn" data-act="x-unlink">Remove</button></span></div>`).join("");
       const err = toolData.errors[s.key] ? `<div class="none">Couldn’t read this tool just now.</div>` : "";
       const loading = toolData.state === "loading" || toolData.state === "idle" ? `<div class="none">Looking…</div>` : "";
-      const start = s.key === "winmap" ? `<div class="startrow"><select id="wmLoc" aria-label="Location for a new win map">${[name].concat(locs.map(l => l.name)).map(n => `<option value="${attr(n)}">${esc(n)}</option>`).join("")}</select><button class="btn small" data-act="wm-start">Start a win map</button></div>` : "";
+      const start = s.key === "winmap" ? `<div class="startrow"><input id="wmName" list="wmList" value="${attr(name)}" aria-label="Name for the new win map"><datalist id="wmList">${locs.map(l => `<option value="${attr(l.name)}">`).join("")}</datalist><button class="btn small" data-act="wm-start">Start a win map</button></div>` : "";
       const noneText = s.single ? `None yet. Name it “${esc(name)}” in the tool.` : `None yet.`;
       const empty = !rows && !manRows ? (err || loading || (toolData.state === "local" ? "" : `<div class="none">${noneText}</div>`)) : "";
       const many = s.single && found.length > 1 ? `<div class="none" style="margin-top:6px">More than one found.</div>` : "";
@@ -578,11 +581,12 @@
     const links = Object.keys(c.links || {}).map(lid => Object.assign({ id: lid }, c.links[lid])).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
       .map(l => `<div class="linkrow" data-id="${attr(l.id)}"><a href="${attr(safeUrl(l.url))}" target="_blank" rel="noopener"><strong>${esc(l.label || l.url)}</strong> ↗</a><button class="btn small danger" data-act="l-del">Remove</button></div>`).join("");
     $("view").innerHTML = `<a class="back" href="#">← BD Hub</a>
-      <div class="ph"><div><p class="eyebrow">Company profile</p><h2 class="big">${esc(name)}</h2><p class="muted">${c.domain ? esc(c.domain) + " · " : ""}${locs.length} HubSpot ${locs.length === 1 ? "record" : "records"}</p></div>
+      <div class="ph"><div><p class="eyebrow">Company profile</p><h2 class="big">${esc(name)}</h2><p class="muted">${[c.domain ? esc(c.domain) : "", locs.length ? locs.length + " HubSpot " + (locs.length === 1 ? "record" : "records") : ""].filter(Boolean).join(" · ")}</p></div>
         <div><button class="btn" data-act="co-edit">Edit</button> <button class="btn danger" data-act="co-del">Delete</button></div></div>
       <div class="pcols"><div>
         <section class="card"><div class="sec-head"><h3>HubSpot</h3></div>
-          <div class="tablewrap"><table class="loc"><thead><tr><th>Record (one per location)</th><th></th></tr></thead><tbody>${locRows || `<tr><td colspan="2" class="none">No HubSpot records added yet. Use Edit to add them.</td></tr>`}</tbody></table></div></section>
+          ${locRows ? `<div class="tablewrap"><table class="loc"><thead><tr><th>Record (one per location)</th><th></th></tr></thead><tbody>${locRows}</tbody></table></div>` : ""}
+          <p style="margin:${locRows ? "14px" : "8px"} 0 0"><a class="btn ${locRows ? "" : "primary"}" href="${attr(HS + "objects/0-2/views/all/list?query=" + encodeURIComponent(name))}" target="_blank" rel="noopener">Find all locations in HubSpot ↗</a></p></section>
         <section class="card"><div class="sec-head"><h3>Other links</h3></div>${links || `<div class="none" style="margin-top:6px">None yet.</div>`}
           <form class="addlink" data-act="l-add" autocomplete="off"><input name="label" placeholder="What it is, e.g. SharePoint folder" aria-label="Link name"><input name="url" placeholder="Paste the link" aria-label="Link address"><button class="btn primary" type="submit">Add link</button></form></section>
       </div><div>
@@ -721,11 +725,10 @@
       });
       if (n){ patchMany(up); render(); toast(n + (n === 1 ? " focus" : " focuses") + " copied from last week"); } else toast("Nothing new to copy.");
     }
-    else if (act === "co-add") editCompany(null);
     else if (act === "co-edit") editCompany(currentCompanyId());
     else if (act === "co-del") { const cid = currentCompanyId(), c = data.companies[cid]; if (c && confirm("Remove " + c.name + " from the hub? Nothing in HubSpot or your tools is touched.")){ put("companies/" + cid, null); location.hash = ""; toast("Company removed from the hub."); } }
     else if (act === "tools-refresh") { loadToolData(true); render(); }
-    else if (act === "wm-start") { const n = $("wmLoc").value; window.open(SITE + "win-map/win-map.html?new=" + encodeURIComponent(n), "_blank", "noopener"); }
+    else if (act === "wm-start") { const n = ($("wmName").value || "").trim() || (data.companies[currentCompanyId()] || {}).name || ""; window.open(SITE + "win-map/win-map.html?new=" + encodeURIComponent(n), "_blank", "noopener"); }
     else if (act === "l-del") { const cid = currentCompanyId(); put("companies/" + cid + "/links/" + id, null); render(); }
     else if (act === "t-add") editTool(null, b.dataset.section);
     else if (act === "t-edit") editTool(id);
@@ -765,6 +768,13 @@
       put("focus/" + week + "/" + uid(), rec);
       if (document.activeElement && document.activeElement.blur) document.activeElement.blur();   // pressing Enter leaves the cursor in a box, which would hold the redraw back
       render();
+    } else if (f.dataset.act === "co-quick") {
+      const name = (fd.name || "").trim(); if (!name){ toast("Type the company name first."); return; }
+      const cid = slug(name);
+      if (data.companies[cid]){ toast("That company is already on the hub."); location.hash = "company/" + encodeURIComponent(cid); return; }
+      put("companies/" + cid, { name, createdAt: Date.now() });
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      location.hash = "company/" + encodeURIComponent(cid);
     } else if (f.dataset.act === "l-add") {
       const url = safeUrl(fd.url); if (!url){ toast("Paste the link first."); return; }
       const cid = currentCompanyId(); put("companies/" + cid + "/links/" + uid(), { label: (fd.label || "").trim() || url, url, createdAt: Date.now() });
@@ -774,7 +784,10 @@
   });
   $("search").addEventListener("input", e => { search = e.target.value; if (!currentCompanyId()) renderHome(); });
   $("editBtn").addEventListener("click", () => { editMode = !editMode; renderHome(); });
-  window.addEventListener("hashchange", () => { window.scrollTo(0, 0); render(); });
+  window.addEventListener("hashchange", () => {
+    const a = document.activeElement; if (a && $("view").contains(a) && a.blur) a.blur();   // moving to another page always redraws, even with the cursor in a box
+    window.scrollTo(0, 0); render();
+  });
 
   init();
 })();
