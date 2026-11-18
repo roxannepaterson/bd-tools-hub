@@ -153,6 +153,7 @@
   .asof{ font-size:16px; color:var(--soft); margin:6px 0 0; } .asof.old{ color:#b4501c; font-weight:600; }
   .pgrid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr) minmax(0,1.15fr); gap:24px; align-items:start; margin-bottom:24px; }
   .pgrid .card, .pcols .card{ margin:0; } .card + .card{ margin-top:24px; } .pgrid .card + .card, .pgrid + .card{ margin-top:0; }
+  .lfind{ margin:12px 0 0; display:flex; gap:8px; flex-wrap:wrap; }
   .lhead{ display:flex; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--soft); margin:6px 0 2px; }
   .lrow{ display:flex; align-items:center; gap:12px; padding:9px 0; border-top:1px solid var(--line); } .lrow:first-of-type{ border-top:0; }
   .lrow input[type=checkbox]{ width:22px; height:22px; accent-color:var(--accent); flex:none; } .lname{ flex:1; min-width:0; font-size:17px; font-weight:500; }
@@ -222,12 +223,12 @@
   const ROOT = "bdHub";
   const LS_KEY = "anchorpoint-bd-hub-v1";
   const SITE = "https://roxannepaterson.github.io/";
-  const HS = "https://app.hubspot.com/contacts/5227851/";
+  const HS = "https://app-eu1.hubspot.com/contacts/5227851/";
   const hsCompany = id => HS + "record/0-2/" + id;
   const DEFAULT_OWNERS = ["Roxanne", "Alison", "Lyndon", "Michael"];
 
   /* ---------- what the hub starts with (written to the database once, then it is yours to edit) ---------- */
-  const SEED_VERSION = 5;
+  const SEED_VERSION = 6;
   const SEED_SECTIONS = [["maps","Win maps and account maps",0],["targeting","Targeting and leads",1]];
   const SEED_TOOLS = [
     ["winmap","maps","Win Map","Strategy On A Page for a live deal.",SITE+"win-map/win-map.html",""],
@@ -237,7 +238,8 @@
     ["lead","targeting","Lead Assessment","Score a lead: pursue, nurture or leave.",SITE+"lead-verifier/lead-assessment.html",""],
     ["lease","targeting","Lease Event Countdown","Time to lease break for a prospect.",SITE+"lease-timeline/index.html",""]
   ];
-  const HS_DASH = "https://app.hubspot.com/reports-dashboard/5227851";
+  const HS_DASH = "https://app-eu1.hubspot.com/reports-dashboard/5227851";
+  const HS_DASH_OLD = "https://app.hubspot.com/reports-dashboard/5227851";   // what earlier versions of the hub used
   const SEED_DASHBOARD = { title:"Anchorpoint BD Dashboard", desc:"", url:"https://claude.ai/artifact/UKmL7KVLBp15dV9Gwbmetz", hsUrl:HS_DASH };
   // a snapshot of the headline numbers, worked out the same way as the Anchorpoint BD Dashboard (Monthly). Not live: it is updated by pasting in new numbers.
   const SEED_SNAPSHOT = { asOf:"2026-11-17", month:"November 2026",
@@ -331,7 +333,7 @@
     if (!data.dashboard) up.dashboard = SEED_DASHBOARD;
     else {
       if (data.dashboard.desc === V2_DASH || data.dashboard.desc === V3_DASH) up["dashboard/desc"] = "";
-      if (!data.dashboard.hsUrl) up["dashboard/hsUrl"] = HS_DASH;
+      if (!data.dashboard.hsUrl || data.dashboard.hsUrl === HS_DASH_OLD) up["dashboard/hsUrl"] = HS_DASH;
     }
     if (!data.snapshot) up.snapshot = SEED_SNAPSHOT;
     if (data.seedVersion < 5){
@@ -551,7 +553,7 @@
   function renderDashboard(){
     const d = data.dashboard;
     if (!d || !d.url) return editMode ? `<section class="card span"><div class="sec-head"><h2>BD dashboard</h2></div><p class="muted">Nothing here yet.</p><button class="btn small" data-act="dash-edit">+ Add the BD dashboard</button></section>` : "";
-    const url = safeUrl(d.url), title = d.title || "BD dashboard", hs = safeUrl(d.hsUrl) || HS_DASH;
+    const url = safeUrl(d.url), title = d.title || "BD dashboard", hsRaw = safeUrl(d.hsUrl) || HS_DASH, hs = hsRaw === HS_DASH_OLD ? HS_DASH : hsRaw;
     return `<section class="card span" id="dash"><div class="sec-head"><h2>${esc(title)}</h2><span class="grow"></span><button class="link-btn" data-act="snap-edit">Update numbers</button>${editMode ? ` <button class="btn small" data-act="dash-edit">Edit links</button>` : ""}</div>
       ${renderSnapshot()}
       <div class="dashbtns"><a class="btn primary" href="${attr(url)}" target="_blank" rel="noopener">Open live dashboard ↗</a><a class="btn" href="${attr(hs)}" target="_blank" rel="noopener">${hs === HS_DASH ? "HubSpot dashboards" : "HubSpot BD Dashboard MTD"} ↗</a></div>
@@ -615,7 +617,8 @@
       <div class="pgrid">
         <section class="card"><div class="sec-head"><h3>Locations</h3><span class="grow"></span>${locs.length ? `<span class="muted">${nAl} of ${locs.length} aligned</span>` : ""}</div>
           ${locRows ? `<div class="lhead"><span>Aligned</span></div>${locRows}` : `<div class="none">None yet.</div>`}
-          <form class="ladd" data-act="loc-add" autocomplete="off"><input name="names" placeholder="Add locations, e.g. Edinburgh, Leeds" aria-label="Add locations"><button class="btn primary" type="submit">Add</button></form></section>
+          <p class="lfind"><a class="btn small" href="${attr(HS + "objects/0-2/views/all/list?query=" + encodeURIComponent(name))}" target="_blank" rel="noopener">Find all locations in HubSpot ↗</a>${locs.find(l => l.parent && hsIdOf(l)) ? ` <a class="btn small" href="${attr(hsCompany(hsIdOf(locs.find(l => l.parent && hsIdOf(l)))))}" target="_blank" rel="noopener">Parent record ↗</a>` : ""}</p>
+          <form class="ladd" data-act="loc-add" autocomplete="off"><input name="names" placeholder="Add locations, e.g. Edinburgh, Leeds" title="Put a * in front of the parent, e.g. *London" aria-label="Add locations"><button class="btn primary" type="submit">Add</button></form></section>
         <section class="card"><div class="sec-head"><h3>Key contacts</h3><span class="grow"></span><button class="btn small" data-act="ct-add">+ Add contact</button></div>
           ${contactRows || `<div class="none">None yet.</div>`}</section>
         <section class="card"><div class="sec-head"><h3>Fit-out partners and suppliers</h3><span class="grow"></span><button class="btn small" data-act="pt-add">+ Add</button></div>
@@ -690,9 +693,11 @@
   }
   function editLocation(cid, lid){
     const l = data.companies[cid].locations[lid];
-    openModal({ title:"Edit location", fields:[{ key:"name", label:"Location", value:l.name, required:true }, { key:"hs", label:"HubSpot company link (optional)", value: l.hsId ? hsCompany(l.hsId) : (/^\d{6,}$/.test(lid) ? hsCompany(lid) : ""), placeholder:"Paste the record’s link" }],
+    openModal({ title:"Edit location", fields:[{ key:"name", label:"Location", value:l.name, required:true }, { key:"parent", label:"Parent company record?", type:"select", value: l.parent ? "yes" : "no", options:[["no", "No"], ["yes", "Yes, this is the parent (head office)"]] }, { key:"hs", label:"HubSpot company link (optional)", value: l.hsId ? hsCompany(l.hsId) : (/^\d{6,}$/.test(lid) ? hsCompany(lid) : ""), placeholder:"Paste the record’s link" }],
       onSave: v => { const hsId = companyIdFrom(v.hs); if (v.hs && !hsId){ toast("I couldn’t find a HubSpot company in that link."); return false; }
-        patchMany({ ["companies/" + cid + "/locations/" + lid + "/name"]: v.name, ["companies/" + cid + "/locations/" + lid + "/hsId"]: hsId || null }); render(); },
+        const up = { ["companies/" + cid + "/locations/" + lid + "/name"]: v.name, ["companies/" + cid + "/locations/" + lid + "/hsId"]: hsId || null, ["companies/" + cid + "/locations/" + lid + "/parent"]: v.parent === "yes" ? true : null };
+        if (v.parent === "yes") Object.keys(data.companies[cid].locations || {}).forEach(k => { if (k !== lid) up["companies/" + cid + "/locations/" + k + "/parent"] = null; });   // only one parent
+        patchMany(up); render(); },
       onDelete: () => { put("companies/" + cid + "/locations/" + lid, null); render(); }, deleteConfirm: "Remove this location?" });
   }
   function editContact(cid, xid){
@@ -828,7 +833,11 @@
     } else if (f.dataset.act === "loc-add") {
       const cid = currentCompanyId(), c = data.companies[cid]; if (!c) return;
       const have = new Set(locationsOf(Object.assign({ id: cid }, c)).map(l => norm(l.name))), up = {}; let n = 0;
-      String(fd.names || "").split(/[,\n]/).map(s => s.trim()).filter(Boolean).forEach(nm => { if (have.has(norm(nm))) return; have.add(norm(nm)); up["companies/" + cid + "/locations/" + uid() + n] = { name: nm, aligned: false, createdAt: Date.now() + n }; n++; });
+      String(fd.names || "").split(/[,\n]/).map(s => s.trim()).filter(Boolean).forEach(raw => {
+        const isParent = raw.startsWith("*"), nm = raw.replace(/^\*+\s*/, "").trim(); if (!nm || have.has(norm(nm))) return; have.add(norm(nm));
+        up["companies/" + cid + "/locations/" + uid() + n] = Object.assign({ name: nm, aligned: false, createdAt: Date.now() + n }, isParent ? { parent: true } : {});
+        if (isParent) Object.keys(c.locations || {}).forEach(k => { up["companies/" + cid + "/locations/" + k + "/parent"] = null; });
+        n++; });
       if (!n){ toast("Type a location first."); return; }
       patchMany(up); if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); render();
     } else if (f.dataset.act === "opp-add") {
