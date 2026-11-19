@@ -167,7 +167,8 @@
   .tabs{ display:flex; flex-wrap:wrap; gap:2px 6px; padding:0 14px; border-bottom:1px solid var(--line); } .tabs button{ background:none; border:0; border-bottom:3px solid transparent; padding:10px 14px; font-size:16px; font-weight:600; color:var(--soft); cursor:pointer; } .tabs button.on{ color:var(--accent); border-bottom-color:var(--accent); }
   .winwrap{ padding:12px 14px 14px; } .winframe{ width:100%; height:720px; border:1px solid var(--line); border-radius:10px; background:#fff; display:block; }
   .stk{ padding:12px 14px 16px; } .tray{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:4px; } .trayl{ font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--soft); }
-  .cchip{ border:1px solid var(--line); background:#fff; border-radius:18px; padding:7px 14px; font-size:15.5px; font-weight:600; cursor:grab; } .cchip small{ margin-left:7px; font-weight:400; color:var(--soft); } .cchip.sel, .pcard.sel{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); background:var(--accent-soft); }
+  .cchip{ border:1px solid var(--line); background:#fff; border-radius:18px; padding:7px 14px; font-size:15.5px; font-weight:600; cursor:grab; } .cchip small{ margin-left:7px; font-weight:400; color:var(--soft); } .cchip.onlymap, .pcard.onlymap{ border-style:dashed; } .cchip .cname{ background:none; border:0; padding:0; font:inherit; font-weight:600; color:inherit; cursor:grab; } .cchip .cx{ background:none; border:0; color:var(--accent); font-size:12.5px; font-weight:600; text-decoration:underline; margin-left:10px; cursor:pointer; padding:0; }
+  .cchip.sel, .pcard.sel{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); background:var(--accent-soft); }
   .board{ display:grid; grid-template-columns:96px repeat(3, minmax(0,1fr)); gap:10px; margin-top:8px; } .axis{ position:relative; margin-top:36px; height:440px; font-size:13px; font-weight:700; color:var(--soft); letter-spacing:.04em; text-transform:uppercase; } .axis span{ position:absolute; left:0; }
   .lane-head{ font-size:14px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); height:30px; display:flex; align-items:center; }
   .lane{ position:relative; border:1px solid var(--line); border-radius:10px; background:linear-gradient(to bottom, rgba(79,122,90,.14) 0 34%, rgba(0,0,0,0) 34% 66%, rgba(194,65,45,.12) 66% 100%); } .lane:hover{ border-color:var(--accent); }
@@ -598,16 +599,20 @@
   let openOpp = null, oppTab = "win", selContact = null, dragContact = null;
 
   function stakeBoard(c, o){
-    const contacts = contactsOf(c), stake = o.stake || {};
-    const placed = contacts.filter(x => stake[x.id]), loose = contacts.filter(x => !stake[x.id]);
-    const tray = loose.map(x => `<button type="button" class="cchip ${selContact === x.id ? "sel" : ""}" draggable="true" data-contact="${attr(x.id)}" data-act="st-sel">${esc(x.name)}${x.role ? `<small>${esc(x.role)}</small>` : ""}</button>`).join("");
+    const stake = o.stake || {};
+    const mine = contactsOf(c).map(x => Object.assign({}, x, { own: false }));
+    const own = listOf(o.people).filter(x => x.name).sort(byCreated).map(x => Object.assign({}, x, { own: true }));   // people added to just this map
+    const all = mine.concat(own), placed = all.filter(x => stake[x.id]), loose = all.filter(x => !stake[x.id]);
+    const chip = x => x.own
+      ? `<span class="cchip onlymap ${selContact === x.id ? "sel" : ""}" draggable="true" data-contact="${attr(x.id)}" title="Only on this map"><button type="button" class="cname" data-act="st-sel" data-contact="${attr(x.id)}">${esc(x.name)}${x.role ? `<small>${esc(x.role)}</small>` : ""}</button><button type="button" class="cx" data-act="pp-edit" aria-label="Edit ${attr(x.name)}">Edit</button></span>`
+      : `<button type="button" class="cchip ${selContact === x.id ? "sel" : ""}" draggable="true" data-contact="${attr(x.id)}" data-act="st-sel">${esc(x.name)}${x.role ? `<small>${esc(x.role)}</small>` : ""}</button>`;
     const lanes = COLS.map((name, ci) => {
       const cards = placed.filter(x => Number(stake[x.id].col) === ci).map(x => { const s = stake[x.id];
-        return `<div class="pcard ${selContact === x.id ? "sel" : ""}" draggable="true" data-contact="${attr(x.id)}" data-act="st-sel" style="top:${scoreY(Number(s.score))}px"><span class="pn">${esc(x.name)}</span>${x.role ? `<span class="pr">${esc(x.role)}</span>` : ""}<span class="ps">${Number(s.score).toFixed(1)}</span><button type="button" class="pe" data-act="st-edit" aria-label="Edit ${attr(x.name)}">Edit</button></div>`; }).join("");
+        return `<div class="pcard ${x.own ? "onlymap" : ""} ${selContact === x.id ? "sel" : ""}" draggable="true" data-contact="${attr(x.id)}" data-act="st-sel" ${x.own ? 'title="Only on this map"' : ""} style="top:${scoreY(Number(s.score))}px"><span class="pn">${esc(x.name)}</span>${x.role ? `<span class="pr">${esc(x.role)}</span>` : ""}<span class="ps">${Number(s.score).toFixed(1)}</span><button type="button" class="pe" data-act="st-edit" aria-label="Edit ${attr(x.name)}">Edit</button></div>`; }).join("");
       return `<div class="lanecol"><div class="lane-head">${esc(name)}</div><div class="lane" data-col="${ci}" style="height:${LANE_H}px">${cards}</div></div>`;
     }).join("");
-    return `<div class="stk"><div class="tray"><span class="trayl">Contacts</span>${tray || `<span class="muted">${contacts.length ? "All placed." : "No contacts yet."}</span>`}<button class="link-btn" data-act="ct-add">+ Add contact</button></div>
-      <p class="muted">Drag a contact onto the board, or tap one and then tap the board. Higher means more supportive.</p>
+    return `<div class="stk"><div class="tray"><span class="trayl">Contacts</span>${loose.map(chip).join("") || `<span class="muted">${all.length ? "All placed." : "No contacts yet."}</span>`}<button class="link-btn" data-act="pp-add">+ Add to this map</button><button class="link-btn" data-act="ct-add">+ Add company contact</button></div>
+      <p class="muted">Drag a contact onto the board, or tap one and then tap the board. Higher means more supportive. Dashed ones are only on this map.</p>
       <div class="board"><div class="axis"><span style="top:0">Promoter</span><span style="top:50%">Neutral</span><span style="bottom:0">Detractor</span></div>${lanes}</div></div>`;
   }
   function winMapSrc(c, o){ return SITE + "win-map/win-map.html?new=" + encodeURIComponent(o.winMapName || (c.name + " - " + o.name)); }
@@ -770,16 +775,28 @@
         patchMany({ ["gateway/" + sid + "/name"]: v.name, ["gateway/" + sid + "/meaning"]: v.meaning, ["gateway/" + sid + "/items"]: Object.keys(next).length ? next : null }); render(); },
       deleteLabel:"Remove this stage", onDelete: () => { put("gateway/" + sid, null); render(); }, deleteConfirm:"Remove " + s.name + " from the criteria for every opportunity?" });
   }
+  function editMapPerson(cid, oid, pid){
+    const o = data.companies[cid].opps[oid], p = pid ? o.people[pid] : {}, base = "companies/" + cid + "/opps/" + oid + "/";
+    openModal({ title: pid ? "Edit person" : "Add someone to this map", fields:[{ key:"name", label:"Name", value:p.name, required:true }, { key:"role", label:"Role", value:p.role, placeholder:"e.g. Property agent" }],
+      onSave: v => { const id = pid || uid(); put(base + "people/" + id, { name:v.name, role:v.role, createdAt: pid ? (p.createdAt || Date.now()) : Date.now() }); render(); },
+      deleteLabel:"Remove from this map", onDelete: pid ? () => { patchMany({ [base + "people/" + pid]: null, [base + "stake/" + pid]: null }); selContact = null; render(); } : null, deleteConfirm:"Remove them from this map?" });
+  }
   function editStake(cid, oid, xid){
-    const s = data.companies[cid].opps[oid].stake[xid], x = data.companies[cid].contacts[xid];
-    openModal({ title: x.name + " on the map", fields:[{ key:"score", label:"How supportive (0 = detractor, 10 = promoter)", value:String(s.score) }, { key:"col", label:"Influence", type:"select", value:String(s.col), options:COLS.map((n, i) => [String(i), n]) }, { key:"notes", label:"Notes", type:"textarea", rows:3, value:s.notes }],
+    const o = data.companies[cid].opps[oid], s = o.stake[xid], own = !!(o.people && o.people[xid]), x = own ? o.people[xid] : data.companies[cid].contacts[xid], base = "companies/" + cid + "/opps/" + oid + "/";
+    const fields = (own ? [{ key:"name", label:"Name", value:x.name, required:true }, { key:"role", label:"Role", value:x.role }] : []).concat([{ key:"score", label:"How supportive (0 = detractor, 10 = promoter)", value:String(s.score) }, { key:"col", label:"Influence", type:"select", value:String(s.col), options:COLS.map((n, i) => [String(i), n]) }, { key:"notes", label:"Notes", type:"textarea", rows:3, value:s.notes }]);
+    openModal({ title: x.name + " on the map", fields,
       onSave: v => { const n = parseFloat(v.score); if (!isFinite(n) || n < 0 || n > 10){ toast("The score is a number from 0 to 10."); return false; }
-        put("companies/" + cid + "/opps/" + oid + "/stake/" + xid, { col: Number(v.col), score: Math.round(n * 2) / 2, notes: v.notes }); render(); },
-      deleteLabel:"Back to contacts", onDelete: () => { put("companies/" + cid + "/opps/" + oid + "/stake/" + xid, null); render(); }, deleteConfirm:"Take them off the map?" });
+        const up = { [base + "stake/" + xid]: { col: Number(v.col), score: Math.round(n * 2) / 2, notes: v.notes } };
+        if (own){ up[base + "people/" + xid + "/name"] = v.name; up[base + "people/" + xid + "/role"] = v.role; }
+        patchMany(up); render(); },
+      deleteLabel: own ? "Remove from this map" : "Back to contacts",
+      onDelete: () => { const up = { [base + "stake/" + xid]: null }; if (own) up[base + "people/" + xid] = null; patchMany(up); selContact = null; render(); },
+      deleteConfirm: own ? "Remove them from this map?" : "Take them off the map?" });
   }
   function placeContact(contactId, col, clientY, laneEl){
     const cid = currentCompanyId(), oid = openOpp; if (!cid || !oid || !contactId) return;
-    const o = data.companies[cid] && data.companies[cid].opps && data.companies[cid].opps[oid]; if (!o || !data.companies[cid].contacts || !data.companies[cid].contacts[contactId]) return;
+    const o = data.companies[cid] && data.companies[cid].opps && data.companies[cid].opps[oid]; if (!o) return;
+    if (!((data.companies[cid].contacts && data.companies[cid].contacts[contactId]) || (o.people && o.people[contactId]))) return;
     const score = yScore(clientY - laneEl.getBoundingClientRect().top), prev = (o.stake && o.stake[contactId]) || {};
     put("companies/" + cid + "/opps/" + oid + "/stake/" + contactId, Object.assign({}, prev, { col, score }));
     selContact = null; dragContact = null; render();
@@ -839,6 +856,8 @@
     else if (act === "opp-edit") editOpp(currentCompanyId(), id);
     else if (act === "g-tick") { put("companies/" + currentCompanyId() + "/opps/" + openOpp + "/gate/" + b.dataset.item, b.checked ? true : null); render(); }
     else if (act === "g-edit") editGateStage(b.closest(".gstage").dataset.stage);
+    else if (act === "pp-add") editMapPerson(currentCompanyId(), openOpp, null);
+    else if (act === "pp-edit") editMapPerson(currentCompanyId(), openOpp, b.closest("[data-contact]").dataset.contact);
     else if (act === "st-sel") { selContact = selContact === b.dataset.contact ? null : b.dataset.contact; render(); }
     else if (act === "st-edit") { e.stopPropagation(); editStake(currentCompanyId(), openOpp, b.closest("[data-contact]").dataset.contact); }
     else if (act === "l-del") { const cid = currentCompanyId(); put("companies/" + cid + "/links/" + id, null); render(); }
