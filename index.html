@@ -182,6 +182,19 @@
   .gitems{ display:flex; flex-direction:column; margin-top:4px; } .gi{ display:flex; align-items:center; gap:12px; padding:6px 0; cursor:pointer; font-size:16.5px; } .gi input{ width:22px; height:22px; accent-color:var(--accent); flex:none; } .gi.on span{ color:var(--soft); }
   .gstage.gate{ background:var(--ink); border-color:var(--ink); border-left-color:var(--apricot); color:#fff; } .gstage.gate .gname{ letter-spacing:.06em; text-transform:uppercase; font-size:15px; } .gstage.gate .gmean, .gstage.gate .gcount, .gstage.gate .gi.on span{ color:#B8BEC4; } .gstage.gate .link-btn{ color:#E3D8F5; }
   .gstage.gate.done{ border-left-color:var(--ok); } .gstage.gate.current{ border-left-color:var(--apricot); box-shadow:0 0 0 2px rgba(255,158,109,.45); background:var(--ink); }
+  .sm-row{ display:grid; grid-template-columns:minmax(190px,.8fr) minmax(0,2.4fr) minmax(130px,.6fr); gap:20px; padding:16px 0; border-top:1px solid var(--line); align-items:start; } .sm-row:first-of-type{ border-top:0; }
+  .sm-acc .co{ font-weight:700; font-size:20px; color:var(--ink); text-decoration:none; border-bottom:1px solid var(--accent); margin-right:8px; } .sm-acc .muted{ margin-top:5px; }
+  .sm-side{ font-size:16px; line-height:1.6; } .sm-side a{ font-weight:600; font-size:15px; }
+  .sa{ display:flex; align-items:center; gap:12px; padding:5px 0; } .sa input[type=checkbox]{ width:22px; height:22px; accent-color:var(--accent); flex:none; } .sa-text{ flex:1; min-width:0; font-size:17px; } .sa-text small{ margin-left:8px; font-size:14px; color:var(--soft); }
+  .sa-date{ font-size:14.5px; font-weight:600; color:var(--soft); white-space:nowrap; } .sa.late .sa-date{ color:#b4501c; } .sa.done .sa-text{ text-decoration:line-through; color:var(--soft); }
+  .sadd{ display:flex; gap:8px; margin-top:16px; } .sadd input{ flex:1; min-width:0; padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:#fff; }
+  .swt{ display:flex; align-items:center; gap:10px; font-size:16px; font-weight:600; cursor:pointer; } .swt input{ width:22px; height:22px; accent-color:var(--accent); }
+  .scard{ display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:28px; margin-top:12px; } .sgrid{ display:grid; grid-template-columns:minmax(0,1fr); gap:12px; } .sgrid.one{ grid-template-columns:1fr; margin-top:12px; }
+  .sf label, .slabel{ display:block; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--soft); margin:0 0 4px; } .slabel{ margin-bottom:6px; }
+  .sf input, .sf select, .sf textarea{ width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:#fff; } .sf textarea{ resize:vertical; field-sizing:content; min-height:44px; }
+  .srisk{ display:flex; align-items:flex-start; gap:10px; padding:7px 0; border-top:1px solid var(--line); } .srisk:first-of-type{ border-top:0; } .srt{ flex:1; min-width:0; font-size:16px; }
+  .chip.imp-high{ background:#FDEAE6; color:var(--danger); } .chip.imp-medium{ background:var(--apricot-soft); color:#b4501c; } .chip.imp-low{ background:var(--grey); color:var(--soft); }
+  @media (max-width:1100px){ .sm-row, .scard{ grid-template-columns:minmax(0,1fr); } .sgrid{ grid-template-columns:1fr; } }
   @media (max-width:1100px){ .home, .pcols{ grid-template-columns:minmax(0,1fr); } .pgrid{ grid-template-columns:minmax(0,1fr); } .board{ grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); } .axis{ display:none; } .oadd{ flex-wrap:wrap; } }
   .pcols > div{ min-width:0; } .panel h4{ flex-wrap:wrap; } .panel{ min-width:0; }
   @media (max-width:900px){ .fadd{ grid-template-columns:1fr 1fr; } .fadd .wide{ grid-column:1 / -1; } .addlink{ grid-template-columns:1fr; } }
@@ -213,6 +226,8 @@
 <datalist id="coList"></datalist>
 <datalist id="ownList"></datalist>
 <datalist id="locList"></datalist>
+<datalist id="stratList"></datalist>
+<datalist id="ctList"></datalist>
 
 <script>
 (function(){
@@ -450,7 +465,9 @@
     $("coList").innerHTML = names.map(n => `<option value="${attr(n)}">`).join("");
     const owners = new Set(DEFAULT_OWNERS);
     Object.values(data.focus).forEach(w => Object.values(w || {}).forEach(f => { if (!f) return; if (f.owner) owners.add(f.owner); Object.values(f.actions || {}).forEach(a => { if (a && a.owner) owners.add(a.owner); }); }));
+    Object.values(data.companies).forEach(c => { const s = (c && c.strategic) || {}; if (s.lead) owners.add(s.lead); Object.values(s.actions || {}).forEach(a => { if (a && a.owner) owners.add(a.owner); }); Object.values(s.risks || {}).forEach(r => { if (r && r.owner) owners.add(r.owner); }); });
     $("ownList").innerHTML = Array.from(owners).sort().map(n => `<option value="${attr(n)}">`).join("");
+    $("stratList").innerHTML = companies().filter(c => !(c.strategic && c.strategic.on)).map(c => `<option value="${attr(c.name)}">`).join("");
   }
 
   const actionsOf = r => Object.keys(r.actions || {}).map(id => Object.assign({ id }, r.actions[id])).filter(a => a && typeof a === "object").sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
@@ -588,8 +605,64 @@
 
   function renderHome(){
     $("editBtn").textContent = editMode ? "Done editing" : "Edit tools"; $("editBtn").classList.toggle("on", editMode);
-    $("view").innerHTML = `<div class="home"><div class="hl">${renderFocus()}</div><div class="hr">${renderCompanies()}${renderTools()}</div>${renderDashboard()}</div>`;
+    $("view").innerHTML = `<div class="home"><div class="hl">${renderFocus()}</div><div class="hr">${renderCompanies()}${renderTools()}</div>${renderStrategic()}${renderDashboard()}</div>`;
   }
+
+  /* ---------- strategic account management: a simple account plan per key account ---------- */
+  const IMPACTS = ["High", "Medium", "Low"];
+  const stratCompanies = () => companies().filter(c => c.strategic && c.strategic.on);
+  const sActions = c => listOf((c.strategic || {}).actions).filter(a => a.text).sort((a, b) => String(a.date || "9999").localeCompare(String(b.date || "9999")) || byCreated(a, b));
+  const sRisks = c => listOf((c.strategic || {}).risks).filter(r => r.risk).sort((a, b) => IMPACTS.indexOf(a.impact) - IMPACTS.indexOf(b.impact) || byCreated(a, b));
+  const shortDate = s => parseISO(s).toLocaleDateString("en-GB", { day:"numeric", month:"short" });
+  function actionRow(a){
+    const late = !a.done && a.date && a.date < iso(new Date());
+    return `<div class="sa ${a.done ? "done" : ""} ${late ? "late" : ""}" data-aid="${attr(a.id)}"><input type="checkbox" data-act="sa-done" ${a.done ? "checked" : ""} aria-label="Done: ${attr(a.text)}"><span class="sa-text">${esc(a.text)}${a.with ? `<small>with ${esc(a.with)}</small>` : ""}</span>${a.owner ? `<span class="aown">${esc(a.owner)}</span>` : ""}${a.date ? `<span class="sa-date">${esc(shortDate(a.date))}</span>` : ""}<button type="button" class="link-btn" data-act="sa-edit">Edit</button></div>`;
+  }
+  function renderStrategic(){
+    const list = stratCompanies().filter(c => matchesSearch(c.name + " " + (c.strategic.lead || "")));
+    const rows = list.map(c => {
+      const s = c.strategic, open = sActions(c).filter(a => !a.done), shown = open.slice(0, 4), more = open.length - shown.length;
+      const opps = oppsOf(c).length, risks = sRisks(c), high = risks.filter(r => r.impact === "High").length, href = "#company/" + encodeURIComponent(c.id);
+      return `<div class="sm-row" data-id="${attr(c.id)}" data-cid="${attr(c.id)}">
+        <div class="sm-acc"><a class="co" href="${attr(href)}">${esc(c.name)}</a><div class="muted">${s.lead ? "Lead: " + esc(s.lead) : "No lead yet"}</div></div>
+        <div class="sm-act">${shown.map(actionRow).join("") || `<span class="none">No next actions.</span>`}${more > 0 ? `<a class="muted" href="${attr(href)}">+${more} more</a>` : ""}<div><button type="button" class="link-btn" data-act="sa-add">+ Add action</button></div></div>
+        <div class="sm-side"><div>${opps} ${opps === 1 ? "opportunity" : "opportunities"}</div><div class="${high ? "neg" : ""}">${risks.length} ${risks.length === 1 ? "risk" : "risks"}${high ? " (" + high + " high)" : ""}</div><a href="${attr(href)}">Open plan →</a></div></div>`;
+    }).join("");
+    return `<section class="card span" id="strategic"><div class="sec-head"><h2>Strategic account management</h2></div>
+      ${rows || `<div class="empty">No strategic accounts yet.</div>`}
+      <form class="sadd" data-act="sm-add" autocomplete="off"><input name="name" list="stratList" placeholder="Add a strategic account: pick a company, or type a new one" aria-label="Strategic account"><button class="btn primary" type="submit">Add</button></form></section>`;
+  }
+  function strategicCard(c){
+    const s = c.strategic || {}, on = !!s.on;
+    const head = `<div class="sec-head"><h3>Strategic account</h3><span class="grow"></span><label class="swt"><input type="checkbox" data-act="s-toggle" ${on ? "checked" : ""}> This is a strategic account</label></div>`;
+    if (!on) return `<section class="card" data-cid="${attr(c.id)}">${head}</section>`;
+    const inp = (key, label, ph, listId) => `<div class="sf"><label>${label}</label><input data-act="s-field" data-f="${key}" value="${attr(s[key] || "")}" placeholder="${attr(ph || "")}" ${listId ? `list="${listId}"` : ""}></div>`;
+    const area = (key, label, ph) => `<div class="sf wide"><label>${label}</label><textarea data-act="s-field" data-f="${key}" rows="2" placeholder="${attr(ph || "")}">${esc(s[key] || "")}</textarea></div>`;
+    const acts = sActions(c), risks = sRisks(c);
+    const riskRows = risks.map(r => `<div class="srisk" data-rid="${attr(r.id)}"><span class="chip imp-${esc(String(r.impact || "Medium").toLowerCase())}">${esc(r.impact || "Medium")}</span><div class="srt"><strong>${esc(r.risk)}</strong>${r.plan ? `<div class="muted">${esc(r.plan)}</div>` : ""}</div>${r.owner ? `<span class="aown">${esc(r.owner)}</span>` : ""}<button type="button" class="link-btn" data-act="sr-edit">Edit</button></div>`).join("");
+    return `<section class="card" data-cid="${attr(c.id)}">${head}
+      <div class="scard"><div>
+        <div class="sgrid">${inp("lead", "Account lead", "Who leads it", "ownList")}</div>
+        <div class="sgrid one">${area("ambition", "Our ambition for the account", "Where we want this account to be in three years")}${area("success", "What success looks like for them", "")}${area("pains", "Their top pain points", "")}</div>
+      </div><div>
+        <div class="slabel">Next actions</div>${acts.map(actionRow).join("") || `<div class="none">None yet.</div>`}<div><button type="button" class="link-btn" data-act="sa-add">+ Add action</button></div>
+        <div class="slabel" style="margin-top:16px">Risks</div>${riskRows || `<div class="none">None yet.</div>`}<div><button type="button" class="link-btn" data-act="sr-add">+ Add risk</button></div>
+      </div></div></section>`;
+  }
+  function editStratAction(cid, aid){
+    const c = data.companies[cid], s = c.strategic || {}, a = aid ? s.actions[aid] : {};
+    $("ctList").innerHTML = contactsOf(Object.assign({ id: cid }, c)).map(x => `<option value="${attr(x.name)}">`).join("");
+    openModal({ title: aid ? "Edit action" : "Add a next action", fields:[{ key:"text", label:"Action", value:a.text, required:true }, { key:"owner", label:"Owner", value: aid ? a.owner : (s.lead || ""), list:"ownList" }, { key:"date", label:"Date", type:"date", value:a.date }, { key:"with", label:"With (optional)", value:a.with, list:"ctList" }],
+      onSave: v => { const id = aid || uid(); put("companies/" + cid + "/strategic/actions/" + id, { text:v.text, owner:v.owner, date:v.date, with:v.with, done: aid ? !!a.done : false, createdAt: aid ? (a.createdAt || Date.now()) : Date.now() }); render(); },
+      onDelete: aid ? () => { put("companies/" + cid + "/strategic/actions/" + aid, null); render(); } : null, deleteConfirm:"Remove this action?" });
+  }
+  function editRisk(cid, rid){
+    const s = data.companies[cid].strategic || {}, r = rid ? s.risks[rid] : {};
+    openModal({ title: rid ? "Edit risk" : "Add a risk", fields:[{ key:"risk", label:"Risk", value:r.risk, required:true, placeholder:"What could stop us growing the account?" }, { key:"impact", label:"Impact", type:"select", value:r.impact || "Medium", options:IMPACTS.map(x => [x, x]) }, { key:"plan", label:"How we answer it", value:r.plan }, { key:"owner", label:"Owner", value:r.owner, list:"ownList" }],
+      onSave: v => { const id = rid || uid(); put("companies/" + cid + "/strategic/risks/" + id, { risk:v.risk, impact:v.impact, plan:v.plan, owner:v.owner, createdAt: rid ? (r.createdAt || Date.now()) : Date.now() }); render(); },
+      onDelete: rid ? () => { put("companies/" + cid + "/strategic/risks/" + rid, null); render(); } : null, deleteConfirm:"Remove this risk?" });
+  }
+  const sCid = b => { const el = b.closest("[data-cid]"); return el ? el.dataset.cid : currentCompanyId(); };
 
   /* ---------- company page: locations, key contacts, partners and suppliers, opportunities ---------- */
   const COLS = ["External Influencer", "Internal Influencer", "Decision Maker"];
@@ -669,6 +742,7 @@
         <section class="card"><div class="sec-head"><h3>Fit-out partners and suppliers</h3><span class="grow"></span><button class="btn small" data-act="pt-add">+ Add</button></div>
           ${partnerRows || `<div class="none">None yet.</div>`}</section>
       </div>
+      ${strategicCard(c)}
       <section class="card"><div class="sec-head"><h3>Opportunities</h3></div>
         ${oppRows || `<div class="none">None yet.</div>`}
         <form class="oadd" data-act="opp-add" autocomplete="off"><input name="name" placeholder="Add an opportunity, e.g. Edinburgh office move" aria-label="Opportunity name"><select name="loc" aria-label="Location"><option value="">Whole company</option>${locs.map(l => `<option value="${attr(l.name)}">${esc(shortLoc(l.name, name))}</option>`).join("")}</select><button class="btn primary" type="submit">Add</button></form></section>
@@ -681,6 +755,7 @@
     const m = $("modal");
     const field = f => `<div class="mf"><label for="mf_${f.key}">${esc(f.label)}</label>${
       f.type === "textarea" ? `<textarea id="mf_${f.key}" rows="${f.rows || 4}" placeholder="${attr(f.placeholder || "")}">${esc(f.value || "")}</textarea>`
+      : f.type === "date" ? `<input id="mf_${f.key}" type="date" value="${attr(f.value || "")}">`
       : f.type === "select" ? `<select id="mf_${f.key}">${f.options.map(op => `<option value="${attr(op[0])}" ${op[0] === f.value ? "selected" : ""}>${esc(op[1])}</option>`).join("")}</select>`
       : `<input id="mf_${f.key}" ${f.list ? `list="${f.list}"` : ""} value="${attr(f.value || "")}" placeholder="${attr(f.placeholder || "")}">`}${f.hint ? `<div class="hint">${esc(f.hint)}</div>` : ""}</div>`;
     m.innerHTML = `<div class="m-back"></div><div class="m-box" role="dialog" aria-modal="true" aria-label="${attr(o.title)}"><h3>${esc(o.title)}</h3><form>${o.fields.map(field).join("")}<div class="m-act">${o.onDelete ? `<button type="button" class="btn danger" id="m_del">${esc(o.deleteLabel || "Delete")}</button>` : ""}<span class="grow"></span><button type="button" class="btn" id="m_cancel">Cancel</button><button type="submit" class="btn primary">${esc(o.saveLabel || "Save")}</button></div></form></div>`;
@@ -858,6 +933,12 @@
     else if (act === "g-edit") editGateStage(b.closest(".gstage").dataset.stage);
     else if (act === "pp-add") editMapPerson(currentCompanyId(), openOpp, null);
     else if (act === "pp-edit") editMapPerson(currentCompanyId(), openOpp, b.closest("[data-contact]").dataset.contact);
+    else if (act === "s-toggle") { put("companies/" + sCid(b) + "/strategic/on", b.checked); render(); }
+    else if (act === "sa-done") { put("companies/" + sCid(b) + "/strategic/actions/" + b.closest("[data-aid]").dataset.aid + "/done", b.checked); render(); }
+    else if (act === "sa-add") editStratAction(sCid(b), null);
+    else if (act === "sa-edit") editStratAction(sCid(b), b.closest("[data-aid]").dataset.aid);
+    else if (act === "sr-add") editRisk(sCid(b), null);
+    else if (act === "sr-edit") editRisk(sCid(b), b.closest("[data-rid]").dataset.rid);
     else if (act === "st-sel") { selContact = selContact === b.dataset.contact ? null : b.dataset.contact; render(); }
     else if (act === "st-edit") { e.stopPropagation(); editStake(currentCompanyId(), openOpp, b.closest("[data-contact]").dataset.contact); }
     else if (act === "l-del") { const cid = currentCompanyId(); put("companies/" + cid + "/links/" + id, null); render(); }
@@ -892,6 +973,13 @@
       if (action) rec.actions = { [uid()]: { text: action, owner: (fd.owner || "").trim(), done:false, createdAt: Date.now() } };
       put("focus/" + week + "/" + uid(), rec);
       if (document.activeElement && document.activeElement.blur) document.activeElement.blur();   // pressing Enter leaves the cursor in a box, which would hold the redraw back
+      render();
+    } else if (f.dataset.act === "sm-add") {
+      const name = (fd.name || "").trim(); if (!name){ toast("Type a company first."); return; }
+      const have = companies().find(x => norm(x.name) === norm(name)), cid = have ? have.id : slug(name);
+      if (!have) put("companies/" + cid, { name, createdAt: Date.now() });
+      put("companies/" + cid + "/strategic/on", true);
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
       render();
     } else if (f.dataset.act === "co-quick") {
       const name = (fd.name || "").trim(); if (!name){ toast("Type the company name first."); return; }
@@ -936,7 +1024,7 @@
     const lane = e.target.closest && e.target.closest(".lane");
     if (lane && selContact && !e.target.closest("[data-act]")) placeContact(selContact, Number(lane.dataset.col), e.clientY, lane);
   });
-  document.addEventListener("change", e => { const el = e.target; if (el && el.dataset && el.dataset.act === "pt-notes"){ const row = el.closest("[data-id]"); put("companies/" + currentCompanyId() + "/partners/" + row.dataset.id + "/notes", el.value); } });
+  document.addEventListener("change", e => { const el = e.target; if (el && el.dataset && el.dataset.act === "s-field"){ put("companies/" + sCid(el) + "/strategic/" + el.dataset.f, el.value.trim()); return; } if (el && el.dataset && el.dataset.act === "pt-notes"){ const row = el.closest("[data-id]"); put("companies/" + currentCompanyId() + "/partners/" + row.dataset.id + "/notes", el.value); } });
   setInterval(() => { const f = $("winFrame"); if (!f) return; try { const d = f.contentDocument; if (d && d.documentElement) f.style.height = Math.max(720, d.documentElement.scrollHeight + 8) + "px"; } catch (e) {} }, 700);
   window.addEventListener("hashchange", () => {
     openOpp = null; selContact = null;
